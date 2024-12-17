@@ -1,7 +1,5 @@
 ## RobotArmView
 
-取油机器人上位机
-
 ## build
 
 ```shell
