@@ -215,3 +215,9 @@ void Robot::addChildLinks(urdf::LinkConstSharedPtr link, ObjectStructure *parent
         }
     }
 }
+
+void Robot::removeAll()
+{
+    std::vector<ObjectStructure*>().swap(m_JointObjects);
+    std::vector<Model*>().swap(m_Joints); 
+}

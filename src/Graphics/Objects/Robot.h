@@ -23,7 +23,7 @@ public:
     void Draw(Shader& shader, GLenum mode);
     void Robot::updateJointAngles(Shader &shader, Camera &camera);
     int loadURDF(const std::string filepath, const std::string filename);
-    void removeAll() { m_JointObjects.clear(); m_Joints.clear();}
+    void removeAll();
     std::string getName() { return m_name; }
     std::vector<Model*> &getJoints() { return m_Joints; }
     std::vector<ObjectStructure*> &getJointObjects() { return m_JointObjects; }
