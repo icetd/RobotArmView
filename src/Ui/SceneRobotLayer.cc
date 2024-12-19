@@ -161,16 +161,18 @@ void SceneRobotLayer::ShowModelLoad()
 
     ImGui::NewLine();
     
+    
     for (int i = 1; i < m_robot->getJointObjects().size(); ++i) {
         ObjectStructure *jointObject = m_robot->getJointObjects()[i];
 
-        float angle = jointObject->getAngle();
+        if (jointObject->joint_type == ObjectStructure::JointType::REVOLUTE) {
+            float angle = jointObject->getAngle();
+            float minAngle = jointObject->limitAngle.lower_angle;
+            float maxAngle = jointObject->limitAngle.upper_angle;
 
-        float minAngle = -90.0f;
-        float maxAngle = 90.0f;
-
-        if (ImGui::SliderFloat(("Joint " + std::to_string(i) + " Angle").c_str(), &angle, minAngle, maxAngle)) {
-            jointObject->setAngle(angle); // 更新关节的角度
+            if (ImGui::SliderFloat(("Joint " + std::to_string(i) + " Angle").c_str(), &angle, minAngle, maxAngle)) {
+                jointObject->setAngle(angle); // 更新关节的角度
+            }
         }
     }
     ImGui::End();

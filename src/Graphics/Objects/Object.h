@@ -2,6 +2,9 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
+#define M_PI    3.141592653589793
+#define RADIANS_TO_ANGLE    180 / M_PI
+
 struct ObjectStructure
 {
     const glm::vec3 blue = glm::vec3(0.1, 0.1, 0.7);
@@ -31,9 +34,28 @@ struct ObjectStructure
     glm::mat4 vis_transmat;
     glm::vec3 scale;  // 机械臂缩放
     glm::vec3 axis;   // 当前关机旋转轴
-    float m_angle;
+
+    typedef struct {
+        float offort_angle;
+        float lower_angle;
+        float upper_angle;
+        float velocity_angle;
+    } LimitsAngle_t;
+
+    LimitsAngle_t limitAngle;
+    float curAngle;
     
     ObjectStructure *parent;
+
+    typedef enum {
+        UNKNOWN,
+        REVOLUTE,
+        CONTINUOUS,
+        PRISMATIC,
+        FLOATING,
+        PLANAR,
+        FIXED
+    } JointType;
 
     void setColor(std::string material)
     {
@@ -68,14 +90,12 @@ struct ObjectStructure
     }
 
     void setAngle(float angle) {
-
-        m_angle = angle;
-        
+        curAngle = angle;
         glm::vec3 translation = glm::vec3(this->joint_transmat[3]);              // 获取原有的平移部分
         glm::mat4 translationMat = glm::translate(glm::mat4(1.0f), translation); // 创建平移矩阵
         glm::mat4 rotationMat = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis);
         this->joint_transmat = translationMat * rotationMat;
     }
 
-    float getAngle() { return m_angle;}
+    float getAngle() { return curAngle;}
 };
