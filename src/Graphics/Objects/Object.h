@@ -25,9 +25,10 @@ struct ObjectStructure
 	std::string name;
 	glm::vec3 modelColor = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::vec3 modelLineColor = glm::vec3(0.2f, 0.2f, 0.2f);
-	glm::mat4 objModel = glm::mat4(1.0f);
-	glm::vec3 objRotation = glm::vec3(0.0f);
-	glm::vec3 objTranslation = glm::vec3(0.0f);
+
+	glm::mat4 objModel = glm::mat4(1.0f);       // not ueed same to joint_transmat
+	glm::mat3 objRotation = glm::mat3(0.0f);    // update in updateJointAngles
+	glm::vec3 objTranslation = glm::vec3(0.0f); // update in updateJointAngles
 
     int joint_type;
     glm::mat4 joint_transmat; // 机械臂 model
@@ -91,8 +92,8 @@ struct ObjectStructure
 
     void setAngle(float angle) {
         curAngle = angle;
-        glm::vec3 translation = glm::vec3(this->joint_transmat[3]);              // 获取原有的平移部分
-        glm::mat4 translationMat = glm::translate(glm::mat4(1.0f), translation); // 创建平移矩阵
+        // objTranslation = glm::vec3(this->joint_transmat[3]); // already update in updateJointAngles
+        glm::mat4 translationMat = glm::translate(glm::mat4(1.0f), objTranslation); // 创建平移矩阵
         glm::mat4 rotationMat = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis);
         this->joint_transmat = translationMat * rotationMat;
     }

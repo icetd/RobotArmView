@@ -10,6 +10,7 @@
 #include "../Graphics/Renderer/Shader.h"
 
 class SceneRobotLayer : public Layer {
+public:
 protected:
     virtual void OnAttach() override;
     virtual void OnUpdate(float ts) override;
@@ -32,14 +33,14 @@ private:
     float m_height;
     int m_selected = 0;
 
-    bool m_isCameraFllowObject = false;
-
+    Robot *m_robot;
+    SceneRobot *m_senceRobot;
+    bool showGrid;
+    bool showAxis;
+ 
     void ShowModelSence();
     void ShowModelLoad();
     void convertPath(char *path);
- 
-    Robot *m_robot;
-    SceneRobot *m_senceRobot;
 };
 
 #endif

@@ -26,28 +26,30 @@ void SceneRobotLayer::OnAttach()
     m_camera = new Camera(eye, lookat, upVector, width, height);
     Application::GetInstance()->InitCamera(m_camera, m_frameBuffer);
 
-    
     m_robot = new Robot();
     m_senceRobot = new SceneRobot(m_robot);
 
     m_robot->loadURDF("res/robot/abb_irb2400_support/urdf/", "res/robot/abb_irb2400_support/urdf/irb2400.urdf");
+
+    showAxis = true;
+    showGrid = true;
 }
 
 void SceneRobotLayer::OnUpdate(float ts)
 {
-    ImGuizmo::SetOrthographic(false);
-    ImGuizmo::BeginFrame();
-
-
     m_camera->UpdateProjMatrix();
     m_camera->UpdateViewMatrix();
     m_proj = m_camera->GetProjMatrix();
     m_view = m_camera->GetViewMatrix();
 
     m_frameBuffer->Bind();
-
+    
     m_senceRobot->UpdateStatus(*m_ColorLightShader, *m_camera);
-
+    if (showGrid)
+        m_senceRobot->DrawGrid(*m_ColorShader, *m_camera);
+    if (showAxis)
+        m_senceRobot->DrawAxis(*m_ColorShader, *m_camera);
+        
     m_frameBuffer->Unbind();
 
     ShowModelSence();
@@ -64,6 +66,7 @@ void SceneRobotLayer::OnDetach()
     delete m_ColorLightShader;
     delete m_ColorShader;
     delete m_senceRobot;
+    delete m_robot;
 }
 
 void SceneRobotLayer::OnUIRender() {}
@@ -90,7 +93,7 @@ void SceneRobotLayer::ShowModelLoad()
     ImGui::Begin(u8"模型加载");
     ImVec2 contentSize = ImGui::GetContentRegionAvail();
     const float buttonWidth = contentSize.x;
-    if (ImGui::Button(u8"添加", ImVec2(buttonWidth, 25)))
+    if (ImGui::Button(u8"add urdf", ImVec2(buttonWidth, 25)))
     {
         ImGui::NewLine();
         OPENFILENAME ofn;
@@ -160,8 +163,7 @@ void SceneRobotLayer::ShowModelLoad()
     }
 
     ImGui::NewLine();
-    
-    
+    ImGui::Separator(); 
     for (int i = 1; i < m_robot->getJointObjects().size(); ++i) {
         ObjectStructure *jointObject = m_robot->getJointObjects()[i];
 
@@ -175,6 +177,20 @@ void SceneRobotLayer::ShowModelLoad()
             }
         }
     }
+
+    if (ImGui::Button("Reset All Joints")) {
+        for (int i = 1; i < m_robot->getJointObjects().size(); ++i) {
+            ObjectStructure *jointObject = m_robot->getJointObjects()[i];
+            if (jointObject->joint_type == ObjectStructure::JointType::REVOLUTE) {
+                float defaultAngle = jointObject->limitAngle.offort_angle; 
+                jointObject->setAngle(defaultAngle);
+            }
+        }
+    }
+    ImGui::Checkbox("Show Grid", &showGrid);
+    ImGui::Checkbox("Show Axis", &showAxis);
+
+    ImGui::Separator();
     ImGui::End();
 }
 

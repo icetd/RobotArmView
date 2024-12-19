@@ -36,7 +36,6 @@ Renderer::~Renderer()
 void Renderer::DrawLine(Shader& shader)
 {
 	m_vao.Bind();
-	glLineWidth(1.0f);
 	glDrawElements(GL_LINES, m_indices.size(), GL_UNSIGNED_INT, 0);
 	m_vao.Unbind();
     glActiveTexture(GL_TEXTURE0);
@@ -45,7 +44,6 @@ void Renderer::DrawLine(Shader& shader)
 void Renderer::DrawLineStrip(Shader &shader, unsigned int size)
 {
 	m_vao.Bind();
-	glLineWidth(2.0f);
     glDrawArrays(GL_LINE_STRIP, 0, size);
 	m_vao.Unbind();
     glActiveTexture(GL_TEXTURE0);

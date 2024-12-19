@@ -23,7 +23,7 @@ void Robot::Draw(Shader& shader, GLenum mode) {
     }
 }
 
-glm::mat4 calTransMat (ObjectStructure *link)
+glm::mat4 Robot::calTransMat (ObjectStructure *link)
 {    
     if (link->parent == nullptr)
         return link->joint_transmat;
@@ -55,6 +55,10 @@ void Robot::updateJointAngles(Shader &shader, Camera &camera) {
         shader.SetUniformVec3f("lightPos", lightPos);
         shader.SetUniformVec3f("camPos", camera.GetEye());
         m_Joints[i]->Draw(shader, GL_FILL);
+
+        // update status
+        m_JointObjects[i]->objTranslation = m_JointObjects[i]->joint_transmat[3];
+        m_JointObjects[i]->objRotation = glm::mat3(m_JointObjects[i]->joint_transmat);
     }
 }
 

@@ -27,7 +27,7 @@ public:
     std::string getName() { return m_name; }
     std::vector<Model*> &getJoints() { return m_Joints; }
     std::vector<ObjectStructure*> &getJointObjects() { return m_JointObjects; }
-    
+    glm::mat4 calTransMat (ObjectStructure *link);
 private:
     std::string m_name;
     std::string m_token;
