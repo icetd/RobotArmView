@@ -5,7 +5,6 @@ layout (location = 1) in vec3 aColor;
 layout (location = 2) in vec3 aNormal;
 layout (location = 3) in vec2 aTexCoords;
 
-out vec3 FragPos;
 out vec3 Color;
 out vec3 Normal;
 out vec3 Position;
@@ -16,10 +15,9 @@ uniform mat4 projection;
 
 void main()
 {	
-	FragPos = aPos;
 	Color = aColor;   
 	Normal = mat3(transpose(inverse(model))) * aNormal;
-    Position = vec3(model * vec4(FragPos, 1.0));
+    Position = vec3(model * vec4(aPos, 1.0));
 	gl_Position = projection * view * model * vec4(aPos, 1.0);
 }
 
@@ -27,7 +25,6 @@ void main()
 #version 330 core
 
 
-in vec3 FragPos;
 in vec3 Color;
 in vec3 Normal;
 in vec3 Position;
