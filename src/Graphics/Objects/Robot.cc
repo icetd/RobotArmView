@@ -203,12 +203,12 @@ void Robot::addChildLinks(urdf::LinkConstSharedPtr link, ObjectStructure *parent
 
                     // 获取limits
                     if (child->parent_joint->limits) {
-                        child_node->limitAngle.offort_angle = child->parent_joint->limits->effort * RADIANS_TO_ANGLE;
+                        child_node->limitAngle.effort = child->parent_joint->limits->effort * RADIANS_TO_ANGLE;
                         child_node->limitAngle.lower_angle = child->parent_joint->limits->lower * RADIANS_TO_ANGLE;
                         child_node->limitAngle.upper_angle = child->parent_joint->limits->upper * RADIANS_TO_ANGLE;
                         child_node->limitAngle.velocity_angle = child->parent_joint->limits->velocity * RADIANS_TO_ANGLE;
                     } else {
-                        child_node->limitAngle.offort_angle = 0;
+                        child_node->limitAngle.effort = 0;
                         child_node->limitAngle.lower_angle = -90;
                         child_node->limitAngle.upper_angle = 90;
                         child_node->limitAngle.velocity_angle = 90; 

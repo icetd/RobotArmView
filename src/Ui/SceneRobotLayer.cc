@@ -182,7 +182,7 @@ void SceneRobotLayer::ShowModelLoad()
         for (int i = 1; i < m_robot->getJointObjects().size(); ++i) {
             ObjectStructure *jointObject = m_robot->getJointObjects()[i];
             if (jointObject->joint_type == ObjectStructure::JointType::REVOLUTE) {
-                float defaultAngle = jointObject->limitAngle.offort_angle; 
+                float defaultAngle = 0.0f; 
                 jointObject->setAngle(defaultAngle);
             }
         }

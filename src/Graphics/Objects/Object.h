@@ -37,7 +37,7 @@ struct ObjectStructure
     glm::vec3 axis;   // 当前关机旋转轴
 
     typedef struct {
-        float offort_angle;
+        float effort;
         float lower_angle;
         float upper_angle;
         float velocity_angle;
