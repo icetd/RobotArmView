@@ -92,8 +92,7 @@ struct ObjectStructure
 
     void setAngle(float angle) {
         curAngle = angle;
-        glm::mat4 rotationMat = glm::rotate(objModelInit, glm::radians(angle), axis);
-        this->joint_transmat =  rotationMat;
+        this->joint_transmat = glm::rotate(objModelInit, glm::radians(angle), axis);
     }
 
     float getAngle() { return curAngle;}
