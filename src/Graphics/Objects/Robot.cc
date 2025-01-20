@@ -28,7 +28,7 @@ glm::mat4 Robot::calTransMat (ObjectStructure *link)
     if (link->parent == nullptr)
         return link->joint_transmat;
         
-    return calTransMat(link->parent) * link->joint_transmat;
+    return calTransMat(link->parent) * link->joint_transmat * link->vis_transmat;
 }
 
 
@@ -118,6 +118,14 @@ int Robot::loadURDF(const std::string filepath, const std::string filename)
             link->visual->material->color.b);
     }
 
+    // 如果材质为空且有颜色，使用默认颜色
+    if (mat_name.empty() && link->visual->material != nullptr) {
+        obj->modelColor = glm::vec3(
+            link->visual->material->color.r,
+            link->visual->material->color.g,
+            link->visual->material->color.b);
+    }
+
     m_JointObjects.push_back(obj);
     addChildLinks(link, obj);
     return 0;
@@ -186,6 +194,7 @@ void Robot::addChildLinks(urdf::LinkConstSharedPtr link, ObjectStructure *parent
                     child_node->name = child->name;
                     child_node->path = file_name;
                     child_node->joint_transmat = joint_transmat;
+                    child_node->objModelInit = joint_transmat;
                     child_node->vis_transmat = vis_transmat;
                     child_node->scale = scale;
                     child_node->axis = axis;

@@ -26,7 +26,7 @@ struct ObjectStructure
 	glm::vec3 modelColor = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::vec3 modelLineColor = glm::vec3(0.2f, 0.2f, 0.2f);
 
-	glm::mat4 objModel = glm::mat4(1.0f);       // not ueed same to joint_transmat
+	glm::mat4 objModelInit = glm::mat4(1.0f);       // joint_transmat Init status
 	glm::mat3 objRotation = glm::mat3(0.0f);    // update in updateJointAngles
 	glm::vec3 objTranslation = glm::vec3(0.0f); // update in updateJointAngles
 
@@ -92,10 +92,8 @@ struct ObjectStructure
 
     void setAngle(float angle) {
         curAngle = angle;
-        // objTranslation = glm::vec3(this->joint_transmat[3]); // already update in updateJointAngles
-        glm::mat4 translationMat = glm::translate(glm::mat4(1.0f), objTranslation); // 创建平移矩阵
-        glm::mat4 rotationMat = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis);
-        this->joint_transmat = translationMat * rotationMat;
+        glm::mat4 rotationMat = glm::rotate(objModelInit, glm::radians(angle), axis);
+        this->joint_transmat =  rotationMat;
     }
 
     float getAngle() { return curAngle;}
