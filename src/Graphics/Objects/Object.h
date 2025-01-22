@@ -36,15 +36,17 @@ struct ObjectStructure
     glm::vec3 scale;  // 机械臂缩放
     glm::vec3 axis;   // 当前关机旋转轴
 
+
     typedef struct {
         float effort;
-        float lower_angle;
-        float upper_angle;
-        float velocity_angle;
-    } LimitsAngle_t;
+        float lower;
+        float upper;
+        float velocity;
+    } Limits_t;
 
-    LimitsAngle_t limitAngle;
+    Limits_t limits;
     float curAngle;
+    float curPos;
     
     ObjectStructure *parent;
 
@@ -94,6 +96,12 @@ struct ObjectStructure
         curAngle = angle;
         this->joint_transmat = glm::rotate(objModelInit, glm::radians(angle), axis);
     }
-
     float getAngle() { return curAngle;}
+
+    void setPos(float pos) {
+        curPos = pos;
+        glm::vec3 translation = axis * pos;
+        this->joint_transmat = glm::translate(objModelInit, translation);
+    }
+    float getPos() { return curPos; }
 };

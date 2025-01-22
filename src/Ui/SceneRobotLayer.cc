@@ -169,11 +169,33 @@ void SceneRobotLayer::ShowModelLoad()
 
         if (jointObject->joint_type == ObjectStructure::JointType::REVOLUTE) {
             float angle = jointObject->getAngle();
-            float minAngle = jointObject->limitAngle.lower_angle;
-            float maxAngle = jointObject->limitAngle.upper_angle;
+            float minAngle = jointObject->limits.lower;
+            float maxAngle = jointObject->limits.upper;
 
-            if (ImGui::SliderFloat(("Joint " + std::to_string(i) + " Angle").c_str(), &angle, minAngle, maxAngle)) {
+            if (ImGui::SliderFloat(("Joint " + std::to_string(i) + " Angle").c_str(), &angle, minAngle, maxAngle))
+            {
                 jointObject->setAngle(angle); // 更新关节的角度
+            }
+        }
+
+        if (jointObject->joint_type == ObjectStructure::JointType::CONTINUOUS) {
+            float angle = jointObject->getAngle();
+            float minAngle = 360;
+            float maxAngle = -360;
+
+            if (ImGui::SliderFloat(("Joint " + std::to_string(i) + " Angle").c_str(), &angle, minAngle, maxAngle))
+            {
+                jointObject->setAngle(angle); // 更新关节的角度
+            }
+        }
+
+        if (jointObject->joint_type == ObjectStructure::JointType::PRISMATIC) {
+            float pos = jointObject->getPos();
+            float minPos = jointObject->limits.lower;
+            float maxPos = jointObject->limits.upper;
+
+            if (ImGui::SliderFloat(("Joint " + std::to_string(i) + " pos").c_str(), &pos, minPos, maxPos)) {
+                jointObject->setPos(pos);
             }
         }
     }

@@ -203,15 +203,41 @@ void Robot::addChildLinks(urdf::LinkConstSharedPtr link, ObjectStructure *parent
 
                     // 获取limits
                     if (child->parent_joint->limits) {
-                        child_node->limitAngle.effort = child->parent_joint->limits->effort * RADIANS_TO_ANGLE;
-                        child_node->limitAngle.lower_angle = child->parent_joint->limits->lower * RADIANS_TO_ANGLE;
-                        child_node->limitAngle.upper_angle = child->parent_joint->limits->upper * RADIANS_TO_ANGLE;
-                        child_node->limitAngle.velocity_angle = child->parent_joint->limits->velocity * RADIANS_TO_ANGLE;
+                        switch (child->parent_joint->type)
+                        {
+                        case urdf::Joint::REVOLUTE:
+                            child_node->limits.effort = child->parent_joint->limits->effort * RADIANS_TO_ANGLE;
+                            child_node->limits.lower = child->parent_joint->limits->lower * RADIANS_TO_ANGLE;
+                            child_node->limits.upper = child->parent_joint->limits->upper * RADIANS_TO_ANGLE;
+                            child_node->limits.velocity = child->parent_joint->limits->velocity * RADIANS_TO_ANGLE;
+                            break;
+                        case urdf::Joint::PRISMATIC:
+                            child_node->limits.effort = child->parent_joint->limits->effort;
+                            child_node->limits.lower = child->parent_joint->limits->lower;
+                            child_node->limits.upper = child->parent_joint->limits->upper;
+                            child_node->limits.velocity = child->parent_joint->limits->velocity;
+                            break;
+                        default:
+                            break;
+                        }
                     } else {
-                        child_node->limitAngle.effort = 0;
-                        child_node->limitAngle.lower_angle = -90;
-                        child_node->limitAngle.upper_angle = 90;
-                        child_node->limitAngle.velocity_angle = 90; 
+                        switch (child->parent_joint->type)
+                        {
+                        case urdf::Joint::REVOLUTE:
+                            child_node->limits.effort = 0;
+                            child_node->limits.lower = 180;
+                            child_node->limits.upper = -180;
+                            child_node->limits.velocity = 0;
+                            break;
+                        case urdf::Joint::PRISMATIC:
+                            child_node->limits.effort = 0;
+                            child_node->limits.lower = -1;
+                            child_node->limits.upper = 1;
+                            child_node->limits.velocity = 0;
+                            break;
+                        default:
+                            break;
+                        }
                     }
 
                     // 处理材质
