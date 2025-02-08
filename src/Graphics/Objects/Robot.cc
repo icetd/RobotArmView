@@ -46,7 +46,7 @@ void Robot::updateJointAngles(Shader &shader, Camera &camera) {
     for (int i = 0; i < m_JointObjects.size(); i++)
     {
         shader.Bind();
-        glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, 100.0f);
+        glm::vec3 lightPos = glm::vec3(0.0f, 20.0f, 20.0f);
         shader.SetUniformMat4f("model", calTransMat(m_JointObjects[i]));
         shader.SetUniformMat4f("projection", camera.GetProjMatrix());
         shader.SetUniformMat4f("view", camera.GetViewMatrix());
