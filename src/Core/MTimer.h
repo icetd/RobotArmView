@@ -11,12 +11,12 @@ public:
     ~MTimer();
     void Start();
     void SetInterval(uint32_t msec);
-    void SetTimerCallback(std::function<void (void)> callback);
+    void SetTimerCallback(std::function<void(void)> callback);
 
     virtual void run() override;
-private:
 
-    std::function<void (void)> OnTimerCallback;
+private:
+    std::function<void(void)> OnTimerCallback;
     uint32_t m_interval_msec;
 };
 

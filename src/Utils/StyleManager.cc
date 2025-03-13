@@ -2,11 +2,10 @@
 #include "imgui_internal.h"
 #include "StyleManager.h"
 
-bool StyleManager::ShowStyleSelector(const char* label)
+bool StyleManager::ShowStyleSelector(const char *label)
 {
     static int style_idx = -1;
-    if (ImGui::Combo(label, &style_idx, "Classic\0Dark\0Light\0ALTERNATIVE_DARK\0CINDER\0HAZEL_DARK\0DARKNESS\0DRACULA\0ENEMYMOUSE\0"))
-    {
+    if (ImGui::Combo(label, &style_idx, "Classic\0Dark\0Light\0ALTERNATIVE_DARK\0CINDER\0HAZEL_DARK\0DARKNESS\0DRACULA\0ENEMYMOUSE\0")) {
         SelectTheme((MStyle_t)style_idx);
         return true;
     }
@@ -15,22 +14,21 @@ bool StyleManager::ShowStyleSelector(const char* label)
 
 void StyleManager::SelectTheme(MStyle_t p_style)
 {
-    ImGuiStyle* style = &ImGui::GetStyle();
+    ImGuiStyle *style = &ImGui::GetStyle();
 
-	switch (p_style) {
-	case MStyle_t::CLASSIC_STYLE:	    
-        ImGui::StyleColorsClassic();	
+    switch (p_style) {
+    case MStyle_t::CLASSIC_STYLE:
+        ImGui::StyleColorsClassic();
         break;
-	case MStyle_t::DARK_STYLE:		
-        ImGui::StyleColorsDark();		
+    case MStyle_t::DARK_STYLE:
+        ImGui::StyleColorsDark();
         break;
-	case MStyle_t::LIGHT_STYLE:		
-        ImGui::StyleColorsLight();		
+    case MStyle_t::LIGHT_STYLE:
+        ImGui::StyleColorsLight();
         break;
-	}
+    }
 
-    if (p_style == MStyle_t::ALTERNATIVE_DARK)
-    {
+    if (p_style == MStyle_t::ALTERNATIVE_DARK) {
         style->WindowPadding = ImVec2(8.00f, 8.00f);
         style->FramePadding = ImVec2(5.00f, 2.00f);
         style->CellPadding = ImVec2(6.00f, 6.00f);
@@ -106,8 +104,7 @@ void StyleManager::SelectTheme(MStyle_t p_style)
         style->Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
     }
 
-    else if (p_style == MStyle_t::CINDER)
-    {
+    else if (p_style == MStyle_t::CINDER) {
         style->WindowPadding = ImVec2(8.00f, 8.00f);
         style->FramePadding = ImVec2(5.00f, 2.00f);
         style->CellPadding = ImVec2(6.00f, 6.00f);
@@ -184,8 +181,7 @@ void StyleManager::SelectTheme(MStyle_t p_style)
         style->Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
     }
 
-    else if (p_style == MStyle_t::HAZEL_DARK) 
-    {
+    else if (p_style == MStyle_t::HAZEL_DARK) {
         style->WindowPadding = ImVec2(8.00f, 8.00f);
         style->FramePadding = ImVec2(5.00f, 2.00f);
         style->CellPadding = ImVec2(6.00f, 6.00f);
@@ -210,26 +206,26 @@ void StyleManager::SelectTheme(MStyle_t p_style)
         style->TabRounding = 4;
 
         // Headers
-		style->Colors[ImGuiCol_Header] = ImVec4(0.20f, 0.25f, 0.29f, 0.55f);
-		style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
-		style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+        style->Colors[ImGuiCol_Header] = ImVec4(0.20f, 0.25f, 0.29f, 0.55f);
+        style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
+        style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
 
-		// Buttons
-		style->Colors[ImGuiCol_Button] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
-		style->Colors[ImGuiCol_ButtonHovered] = ImVec4(0.28f, 0.56f, 1.00f, 1.00f);
-		style->Colors[ImGuiCol_ButtonActive] = ImVec4(0.06f, 0.53f, 0.98f, 1.00f);
+        // Buttons
+        style->Colors[ImGuiCol_Button] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+        style->Colors[ImGuiCol_ButtonHovered] = ImVec4(0.28f, 0.56f, 1.00f, 1.00f);
+        style->Colors[ImGuiCol_ButtonActive] = ImVec4(0.06f, 0.53f, 0.98f, 1.00f);
 
-		// Frame BG
-		style->Colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
-		style->Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.12f, 0.20f, 0.28f, 1.00f);
-		style->Colors[ImGuiCol_FrameBgActive] = ImVec4(0.09f, 0.12f, 0.14f, 1.00f);
+        // Frame BG
+        style->Colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+        style->Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.12f, 0.20f, 0.28f, 1.00f);
+        style->Colors[ImGuiCol_FrameBgActive] = ImVec4(0.09f, 0.12f, 0.14f, 1.00f);
 
-		// Tabs
-		style->Colors[ImGuiCol_Tab] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
-		style->Colors[ImGuiCol_TabHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
-		style->Colors[ImGuiCol_TabActive] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
-		style->Colors[ImGuiCol_TabUnfocused] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
-		style->Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+        // Tabs
+        style->Colors[ImGuiCol_Tab] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+        style->Colors[ImGuiCol_TabHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
+        style->Colors[ImGuiCol_TabActive] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+        style->Colors[ImGuiCol_TabUnfocused] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+        style->Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
 
         // Title
         style->Colors[ImGuiCol_TitleBg] = ImVec4(0.09f, 0.12f, 0.14f, 0.65f);
@@ -271,8 +267,7 @@ void StyleManager::SelectTheme(MStyle_t p_style)
         style->Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
     }
 
-    else if (p_style == MStyle_t::DARKNESS)
-    {
+    else if (p_style == MStyle_t::DARKNESS) {
         style->WindowPadding = ImVec2(8.00f, 8.00f);
         style->FramePadding = ImVec2(5.00f, 2.00f);
         style->CellPadding = ImVec2(6.00f, 6.00f);
@@ -295,7 +290,7 @@ void StyleManager::SelectTheme(MStyle_t p_style)
         style->GrabRounding = 3;
         style->LogSliderDeadzone = 4;
         style->TabRounding = 4;
-        
+
         style->Colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
         style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
         style->Colors[ImGuiCol_WindowBg] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
@@ -353,8 +348,7 @@ void StyleManager::SelectTheme(MStyle_t p_style)
         style->Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
     }
 
-    else if (p_style == MStyle_t::DRACULA)
-    {
+    else if (p_style == MStyle_t::DRACULA) {
         style->WindowPadding = ImVec2(8.00f, 8.00f);
         style->FramePadding = ImVec2(5.00f, 2.00f);
         style->CellPadding = ImVec2(6.00f, 6.00f);
@@ -418,8 +412,7 @@ void StyleManager::SelectTheme(MStyle_t p_style)
         style->Colors[ImGuiCol_DockingPreview] = ImVec4{0.44f, 0.37f, 0.61f, 1.0f};
     }
 
-    else if (p_style == MStyle_t::ENEMYMOUSE)
-    {
+    else if (p_style == MStyle_t::ENEMYMOUSE) {
         style->WindowPadding = ImVec2(8.00f, 8.00f);
         style->FramePadding = ImVec2(5.00f, 2.00f);
         style->CellPadding = ImVec2(6.00f, 6.00f);
@@ -442,7 +435,7 @@ void StyleManager::SelectTheme(MStyle_t p_style)
         style->GrabRounding = 3;
         style->LogSliderDeadzone = 4;
         style->TabRounding = 4;
- 
+
         style->Colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
         style->Colors[ImGuiCol_Separator] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
         style->Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.10f, 0.40f, 0.75f, 0.78f);
@@ -480,12 +473,12 @@ void StyleManager::SelectTheme(MStyle_t p_style)
         style->Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.00f, 1.00f, 1.00f, 1.00f);
         style->Colors[ImGuiCol_PlotHistogram] = ImVec4(0.00f, 1.00f, 1.00f, 1.00f);
         style->Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.00f, 1.00f, 1.00f, 1.00f);
-        style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.00f, 1.00f, 1.00f, 0.22f);	
+        style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.00f, 1.00f, 1.00f, 0.22f);
         style->Colors[ImGuiCol_Tab] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
-		style->Colors[ImGuiCol_TabHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
-		style->Colors[ImGuiCol_TabActive] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
-		style->Colors[ImGuiCol_TabUnfocused] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
-		style->Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+        style->Colors[ImGuiCol_TabHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
+        style->Colors[ImGuiCol_TabActive] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+        style->Colors[ImGuiCol_TabUnfocused] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+        style->Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
         style->Colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
         style->Colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
         style->Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);

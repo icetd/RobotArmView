@@ -61,8 +61,8 @@ void FrameBuffer::Bind() const
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_POLYGON_OFFSET_FILL);
-    glEnable(GL_LINE_SMOOTH); 
-    
+    glEnable(GL_LINE_SMOOTH);
+
     glClearColor(0.3f, 0.3f, 0.3f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -73,9 +73,9 @@ void FrameBuffer::Unbind() const
 
     glDisable(GL_BLEND);
     glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST); 
+    glDisable(GL_DEPTH_TEST);
     glDisable(GL_POLYGON_OFFSET_FILL);
-    glDisable(GL_LINE_SMOOTH); 
+    glDisable(GL_LINE_SMOOTH);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }

@@ -12,7 +12,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-class Application 
+class Application
 {
 public:
     Application(const char *appName, int w, int h);
@@ -32,9 +32,10 @@ public:
     void PushLayer(const std::shared_ptr<Layer> &layer);
     void Close();
 
-    void InitCamera(Camera* camera, FrameBuffer* frameBuffer) {
-	    m_camera = camera;
-	    m_frameBuffer = frameBuffer;
+    void InitCamera(Camera *camera, FrameBuffer *frameBuffer)
+    {
+        m_camera = camera;
+        m_frameBuffer = frameBuffer;
     }
 
     float GetTime();
@@ -47,13 +48,16 @@ public:
     void mouse_callback(GLFWwindow *window, double xpos, double ypos);
     void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
-    const int GetWidth() {
+    const int GetWidth()
+    {
         return m_Width;
     }
 
-    const int GetHeight() {
+    const int GetHeight()
+    {
         return m_Height;
     }
+
 private:
     std::string m_AppName;
     int m_Width;

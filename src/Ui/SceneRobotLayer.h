@@ -9,7 +9,8 @@
 #include "../Graphics/Renderer/Renderer.h"
 #include "../Graphics/Renderer/Shader.h"
 
-class SceneRobotLayer : public Layer {
+class SceneRobotLayer : public Layer
+{
 public:
 protected:
     virtual void OnAttach() override;
@@ -37,7 +38,7 @@ private:
     SceneRobot *m_senceRobot;
     bool showGrid;
     bool showAxis;
- 
+
     void ShowModelSence();
     void ShowModelLoad();
     void convertPath(char *path);

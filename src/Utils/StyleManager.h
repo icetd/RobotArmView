@@ -1,9 +1,11 @@
 #ifndef SELECT_THEME_H
 #define SELECT_THEME_H
 
-class StyleManager {
+class StyleManager
+{
 public:
-    typedef enum {
+    typedef enum
+    {
         CLASSIC_STYLE = 0,
         DARK_STYLE,
         LIGHT_STYLE,
@@ -15,9 +17,8 @@ public:
         ENEMYMOUSE
     } MStyle_t;
 
-    static bool ShowStyleSelector(const char* label);
+    static bool ShowStyleSelector(const char *label);
     static void SelectTheme(MStyle_t p_style);
 };
-
 
 #endif

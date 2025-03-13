@@ -43,13 +43,13 @@ void SceneRobotLayer::OnUpdate(float ts)
     m_view = m_camera->GetViewMatrix();
 
     m_frameBuffer->Bind();
-    
+
     m_senceRobot->UpdateStatus(*m_ColorLightShader, *m_camera);
     if (showGrid)
         m_senceRobot->DrawGrid(*m_ColorShader, *m_camera);
     if (showAxis)
         m_senceRobot->DrawAxis(*m_ColorShader, *m_camera);
-        
+
     m_frameBuffer->Unbind();
 
     ShowModelSence();
@@ -69,11 +69,12 @@ void SceneRobotLayer::OnDetach()
     delete m_robot;
 }
 
-void SceneRobotLayer::OnUIRender() {}
+void SceneRobotLayer::OnUIRender()
+{}
 
 void SceneRobotLayer::ShowModelSence()
 {
-    ImGui::Begin("Scene"); 
+    ImGui::Begin("Scene");
     {
         ImGui::BeginChild("GameRender");
         float width = ImGui::GetContentRegionAvail().x;
@@ -93,8 +94,7 @@ void SceneRobotLayer::ShowModelLoad()
     ImGui::Begin(u8"模型加载");
     ImVec2 contentSize = ImGui::GetContentRegionAvail();
     const float buttonWidth = contentSize.x;
-    if (ImGui::Button(u8"add urdf", ImVec2(buttonWidth, 25)))
-    {
+    if (ImGui::Button(u8"add urdf", ImVec2(buttonWidth, 25))) {
         ImGui::NewLine();
         OPENFILENAME ofn;
         char szFile[260];
@@ -114,8 +114,7 @@ void SceneRobotLayer::ShowModelLoad()
         ofn.nMaxFileTitle = 0;
         ofn.lpstrInitialDir = NULL;
         ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-        if (GetOpenFileName(&ofn) == TRUE)
-        {
+        if (GetOpenFileName(&ofn) == TRUE) {
             char *output = new char[strlen(szFile) + 1];
             strcpy(output, szFile);
             convertPath(output);
@@ -127,8 +126,7 @@ void SceneRobotLayer::ShowModelLoad()
             char *name = NULL;
             const char *delimeter = "\\";
             token = strtok(output, delimeter);
-            while (token != NULL)
-            {
+            while (token != NULL) {
                 name = token;
                 token = strtok(NULL, delimeter);
             }
@@ -138,7 +136,7 @@ void SceneRobotLayer::ShowModelLoad()
             size_t lastSlashPos = strName.find_last_of('/');
             std::string filename = strName.substr(lastSlashPos + 1);
             std::string filepath = strName.substr(0, lastSlashPos);
-            
+
             m_robot->removeAll();
             m_robot->loadURDF(filepath, filename);
         }
@@ -163,7 +161,7 @@ void SceneRobotLayer::ShowModelLoad()
     }
 
     ImGui::NewLine();
-    ImGui::Separator(); 
+    ImGui::Separator();
     for (int i = 1; i < m_robot->getJointObjects().size(); ++i) {
         ObjectStructure *jointObject = m_robot->getJointObjects()[i];
 
@@ -172,8 +170,7 @@ void SceneRobotLayer::ShowModelLoad()
             float minAngle = jointObject->limits.lower;
             float maxAngle = jointObject->limits.upper;
 
-            if (ImGui::SliderFloat(("Joint " + std::to_string(i) + " Angle").c_str(), &angle, minAngle, maxAngle))
-            {
+            if (ImGui::SliderFloat(("Joint " + std::to_string(i) + " Angle").c_str(), &angle, minAngle, maxAngle)) {
                 jointObject->setAngle(angle); // 更新关节的角度
             }
         }
@@ -183,8 +180,7 @@ void SceneRobotLayer::ShowModelLoad()
             float minAngle = 360;
             float maxAngle = -360;
 
-            if (ImGui::SliderFloat(("Joint " + std::to_string(i) + " Angle").c_str(), &angle, minAngle, maxAngle))
-            {
+            if (ImGui::SliderFloat(("Joint " + std::to_string(i) + " Angle").c_str(), &angle, minAngle, maxAngle)) {
                 jointObject->setAngle(angle); // 更新关节的角度
             }
         }
@@ -204,7 +200,7 @@ void SceneRobotLayer::ShowModelLoad()
         for (int i = 1; i < m_robot->getJointObjects().size(); ++i) {
             ObjectStructure *jointObject = m_robot->getJointObjects()[i];
             if (jointObject->joint_type == ObjectStructure::JointType::REVOLUTE) {
-                float defaultAngle = 0.0f; 
+                float defaultAngle = 0.0f;
                 jointObject->setAngle(defaultAngle);
             }
         }
@@ -218,8 +214,7 @@ void SceneRobotLayer::ShowModelLoad()
 
 void SceneRobotLayer::convertPath(char *path)
 {
-    while (*path != '\0')
-    {
+    while (*path != '\0') {
         if (*path == '\\') {
             *path = '/';
         }

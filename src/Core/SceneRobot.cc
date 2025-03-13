@@ -9,23 +9,26 @@
 
 static SceneRobot *Instance = nullptr;
 
-SceneRobot::SceneRobot(Robot *robot)
-    : m_robot(robot)
+SceneRobot::SceneRobot(Robot *robot) :
+    m_robot(robot)
 {
     Instance = this;
 
     GenerateGrid(slices, slices, 1, glm::vec3(0.1f, 0.1f, 0.1f));
-    m_girdRender = new Renderer(m_verticesGird, m_indicesGird, m_emptyTexture);  // reuse
+    m_girdRender = new Renderer(m_verticesGird, m_indicesGird, m_emptyTexture); // reuse
 
     GenerateAxis(0.3);
-    m_axisRender = new Renderer(m_verticesAxis, m_indicesAxis, m_emptyTexture);  // reuse
+    m_axisRender = new Renderer(m_verticesAxis, m_indicesAxis, m_emptyTexture); // reuse
 }
 
 SceneRobot::~SceneRobot()
 {
 }
 
-SceneRobot *SceneRobot::GetInstance() { return Instance; }
+SceneRobot *SceneRobot::GetInstance()
+{
+    return Instance;
+}
 
 void SceneRobot::UpdateStatus(Shader &shader, Camera &camera)
 {
@@ -110,49 +113,43 @@ void SceneRobot::GenerateAxis(float length)
     glm::vec3 color_y(0.2f, 0.8f, 0.2f); // Green for Y-axis
     glm::vec3 color_z(0.2f, 0.2f, 0.8f); // Blue for Z-axis
 
-
     // X-axis vertices and indices
-    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, 0.0f, 0.0f), color_x}); // Red
+    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, 0.0f, 0.0f), color_x});   // Red
     m_verticesAxis.push_back(Vertex{glm::vec3(length, 0.0f, 0.0f), color_x}); // Red
 
-
     // Y-axis vertices and indices
-    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, 0.0f, 0.0f), color_y}); // Green
+    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, 0.0f, 0.0f), color_y});   // Green
     m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, length, 0.0f), color_y}); // Green
 
-
     // Z-axis vertices and indices
-    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, 0.0f, 0.0f), color_z}); // Blue
+    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, 0.0f, 0.0f), color_z});   // Blue
     m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, 0.0f, length), color_z}); // Blue
 
-    
     // X-axis char
-    m_verticesAxis.push_back(Vertex{glm::vec3(charShift, charWidth, -charHeight), color_x}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(charShift, -charWidth, charHeight), color_x}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(charShift, -charWidth, -charHeight), color_x}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(charShift, charWidth, charHeight), color_x}); 
-
+    m_verticesAxis.push_back(Vertex{glm::vec3(charShift, charWidth, -charHeight), color_x});
+    m_verticesAxis.push_back(Vertex{glm::vec3(charShift, -charWidth, charHeight), color_x});
+    m_verticesAxis.push_back(Vertex{glm::vec3(charShift, -charWidth, -charHeight), color_x});
+    m_verticesAxis.push_back(Vertex{glm::vec3(charShift, charWidth, charHeight), color_x});
 
     // Y-axis char
     m_verticesAxis.push_back(Vertex{glm::vec3(charWidth, charShift, charHeight), color_y});
-    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, charShift, 0.0f), color_y}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(-charWidth, charShift, charHeight), color_y}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, charShift, 0.0f), color_y}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, charShift, 0.0f), color_y}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, charShift, -charHeight), color_y}); 
-
+    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, charShift, 0.0f), color_y});
+    m_verticesAxis.push_back(Vertex{glm::vec3(-charWidth, charShift, charHeight), color_y});
+    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, charShift, 0.0f), color_y});
+    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, charShift, 0.0f), color_y});
+    m_verticesAxis.push_back(Vertex{glm::vec3(0.0f, charShift, -charHeight), color_y});
 
     // Z-axis char
-    m_verticesAxis.push_back(Vertex{glm::vec3(-charWidth, charHeight, charShift), color_z}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(charWidth, charHeight, charShift), color_z}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(charWidth, charHeight, charShift), color_z}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(-charWidth, -charHeight, charShift), color_z}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(-charWidth, -charHeight, charShift), color_z}); 
-    m_verticesAxis.push_back(Vertex{glm::vec3(charWidth, -charHeight, charShift), color_z}); 
+    m_verticesAxis.push_back(Vertex{glm::vec3(-charWidth, charHeight, charShift), color_z});
+    m_verticesAxis.push_back(Vertex{glm::vec3(charWidth, charHeight, charShift), color_z});
+    m_verticesAxis.push_back(Vertex{glm::vec3(charWidth, charHeight, charShift), color_z});
+    m_verticesAxis.push_back(Vertex{glm::vec3(-charWidth, -charHeight, charShift), color_z});
+    m_verticesAxis.push_back(Vertex{glm::vec3(-charWidth, -charHeight, charShift), color_z});
+    m_verticesAxis.push_back(Vertex{glm::vec3(charWidth, -charHeight, charShift), color_z});
 
     for (int i = 0; i < m_verticesAxis.size(); i++) {
         m_indicesAxis.push_back(i);
     }
-    
+
     m_axisRender = new Renderer(m_verticesAxis, m_indicesAxis, m_emptyTexture);
 }

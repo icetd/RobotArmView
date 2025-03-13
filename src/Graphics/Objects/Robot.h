@@ -20,21 +20,22 @@ class Robot
 public:
     Robot();
     ~Robot();
-    void Draw(Shader& shader, GLenum mode);
+    void Draw(Shader &shader, GLenum mode);
     void Robot::updateJointAngles(Shader &shader, Camera &camera);
     int loadURDF(const std::string filepath, const std::string filename);
     void removeAll();
     std::string getName() { return m_name; }
-    std::vector<Model*> &getJoints() { return m_Joints; }
-    std::vector<ObjectStructure*> &getJointObjects() { return m_JointObjects; }
-    glm::mat4 calTransMat (ObjectStructure *link);
+    std::vector<Model *> &getJoints() { return m_Joints; }
+    std::vector<ObjectStructure *> &getJointObjects() { return m_JointObjects; }
+    glm::mat4 calTransMat(ObjectStructure *link);
+
 private:
     std::string m_name;
     std::string m_token;
-    
+
     Model *m_joint;
-    std::vector<Model*> m_Joints;
-    std::vector<ObjectStructure*>  m_JointObjects;
+    std::vector<Model *> m_Joints;
+    std::vector<ObjectStructure *> m_JointObjects;
 
     void addChildLinks(urdf::LinkConstSharedPtr link, ObjectStructure *parent);
 };

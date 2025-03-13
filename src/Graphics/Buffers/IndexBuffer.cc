@@ -1,7 +1,7 @@
 #include "IndexBuffer.h"
-#include<glm/glm.hpp>
+#include <glm/glm.hpp>
 
-IndexBuffer::IndexBuffer(std::vector<GLuint>& indices)
+IndexBuffer::IndexBuffer(std::vector<GLuint> &indices)
 {
     glGenBuffers(1, &m_IndexBufferID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBufferID);

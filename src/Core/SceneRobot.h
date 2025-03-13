@@ -19,7 +19,7 @@ private:
     float m_platfromSize = 100.0f;
     int slices = m_platfromSize;
     glm::mat4 m_modelPlatform = glm::mat4(1.0f);
-    
+
     std::vector<Texture> m_emptyTexture;
     std::vector<Vertex> m_verticesGird;
     std::vector<GLuint> m_indicesGird;

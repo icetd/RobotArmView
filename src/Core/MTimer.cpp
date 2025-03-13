@@ -28,7 +28,7 @@ void MTimer::SetTimerCallback(std::function<void(void)> callback)
 
 void MTimer::run()
 {
-    while(!this->isStoped()) {
+    while (!this->isStoped()) {
         this->sleepMs(m_interval_msec);
         try {
             OnTimerCallback();

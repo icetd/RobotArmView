@@ -7,13 +7,13 @@
 class IndexBuffer
 {
 public:
-	IndexBuffer(std::vector<GLuint>& indices);
-	~IndexBuffer();
-	void Bind() const;
-	void Unbind() const;
+    IndexBuffer(std::vector<GLuint> &indices);
+    ~IndexBuffer();
+    void Bind() const;
+    void Unbind() const;
 
 private:
-	unsigned int m_IndexBufferID;
+    unsigned int m_IndexBufferID;
 };
 
 #endif

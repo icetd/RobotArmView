@@ -6,7 +6,7 @@
 class MainLayer : public Layer
 {
 protected:
-	virtual void OnUpdate(float ts) override;
+    virtual void OnUpdate(float ts) override;
 };
 
 #endif

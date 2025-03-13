@@ -2,11 +2,10 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
-#define M_PI    3.141592653589793
-#define RADIANS_TO_ANGLE    180 / M_PI
+#define M_PI 3.141592653589793
+#define RADIANS_TO_ANGLE 180 / M_PI
 
-struct ObjectStructure
-{
+struct ObjectStructure {
     const glm::vec3 blue = glm::vec3(0.1, 0.1, 0.7);
     const glm::vec3 green = glm::vec3(0.0, 0.8, 0.0);
     const glm::vec3 grey = glm::vec3(0.6, 0.6, 0.6);
@@ -21,21 +20,20 @@ struct ObjectStructure
     const glm::vec3 silver = glm::vec3(0.8, 0.8, 0.8);
 
     bool modelDefined = false;
-	std::string path;
-	std::string name;
-	glm::vec3 modelColor = glm::vec3(0.5f, 0.5f, 0.5f);
-	glm::vec3 modelLineColor = glm::vec3(0.2f, 0.2f, 0.2f);
+    std::string path;
+    std::string name;
+    glm::vec3 modelColor = glm::vec3(0.5f, 0.5f, 0.5f);
+    glm::vec3 modelLineColor = glm::vec3(0.2f, 0.2f, 0.2f);
 
-	glm::mat4 objModelInit = glm::mat4(1.0f);       // joint_transmat Init status
-	glm::mat3 objRotation = glm::mat3(0.0f);    // update in updateJointAngles
-	glm::vec3 objTranslation = glm::vec3(0.0f); // update in updateJointAngles
+    glm::mat4 objModelInit = glm::mat4(1.0f);   // joint_transmat Init status
+    glm::mat3 objRotation = glm::mat3(0.0f);    // update in updateJointAngles
+    glm::vec3 objTranslation = glm::vec3(0.0f); // update in updateJointAngles
 
     int joint_type;
     glm::mat4 joint_transmat; // 机械臂 model
     glm::mat4 vis_transmat;
-    glm::vec3 scale;  // 机械臂缩放
-    glm::vec3 axis;   // 当前关机旋转轴
-
+    glm::vec3 scale; // 机械臂缩放
+    glm::vec3 axis;  // 当前关机旋转轴
 
     typedef struct {
         float effort;
@@ -47,10 +45,11 @@ struct ObjectStructure
     Limits_t limits;
     float curAngle;
     float curPos;
-    
+
     ObjectStructure *parent;
 
-    typedef enum {
+    typedef enum
+    {
         UNKNOWN,
         REVOLUTE,
         CONTINUOUS,
@@ -64,7 +63,7 @@ struct ObjectStructure
     {
         std::string lowerMaterial = material;
         std::transform(lowerMaterial.begin(), lowerMaterial.end(), lowerMaterial.begin(), ::tolower);
-        
+
         if (lowerMaterial == "blue") {
             this->modelColor = blue;
         } else if (lowerMaterial == "green") {
@@ -92,13 +91,15 @@ struct ObjectStructure
         }
     }
 
-    void setAngle(float angle) {
+    void setAngle(float angle)
+    {
         curAngle = angle;
         this->joint_transmat = glm::rotate(objModelInit, glm::radians(angle), axis);
     }
-    float getAngle() { return curAngle;}
+    float getAngle() { return curAngle; }
 
-    void setPos(float pos) {
+    void setPos(float pos)
+    {
         curPos = pos;
         glm::vec3 translation = axis * pos;
         this->joint_transmat = glm::translate(objModelInit, translation);

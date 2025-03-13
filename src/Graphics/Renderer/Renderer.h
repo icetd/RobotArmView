@@ -13,23 +13,23 @@
 class Renderer
 {
 public:
-	Renderer(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, std::vector<Texture> textures);
-	~Renderer();
+    Renderer(std::vector<Vertex> &vertices, std::vector<GLuint> &indices, std::vector<Texture> textures);
+    ~Renderer();
 
-	void Clear();
-	void DrawLine(Shader& shader);
-	void DrawLineStrip(Shader &shader, unsigned int size);
-	void DrawLineStripPoint(Shader &shader, unsigned int size);
-	void DrawTriangle(Shader &shader, GLenum mode);
+    void Clear();
+    void DrawLine(Shader &shader);
+    void DrawLineStrip(Shader &shader, unsigned int size);
+    void DrawLineStripPoint(Shader &shader, unsigned int size);
+    void DrawTriangle(Shader &shader, GLenum mode);
 
 private:
-	std::vector<Vertex> m_vertices;
-	std::vector<GLuint> m_indices;
-	std::vector<Texture> m_textures;
-	
+    std::vector<Vertex> m_vertices;
+    std::vector<GLuint> m_indices;
+    std::vector<Texture> m_textures;
+
     VertexArray m_vao;
-	VertexBuffer* m_vbo;
-	IndexBuffer* m_ibo;
+    VertexBuffer *m_vbo;
+    IndexBuffer *m_ibo;
 };
 
 #endif

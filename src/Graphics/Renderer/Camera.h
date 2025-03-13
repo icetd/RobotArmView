@@ -9,18 +9,13 @@
 #include <vector>
 #include <iostream>
 
-# define M_PI           3.14159265358979323846  /* pi */
+#define M_PI 3.14159265358979323846 /* pi */
 
 class Camera
 {
 public:
-
-    Camera(glm::vec3 eye, glm::vec3 lookat, glm::vec3 upVector, float width, float height)
-        : m_eye(std::move(eye))
-        , m_lookAt(std::move(lookat))
-        , m_upVector(std::move(upVector))
-        , m_width(width)
-        , m_height(height)
+    Camera(glm::vec3 eye, glm::vec3 lookat, glm::vec3 upVector, float width, float height) :
+        m_eye(std::move(eye)), m_lookAt(std::move(lookat)), m_upVector(std::move(upVector)), m_width(width), m_height(height)
     {
         m_eyeInitial = m_eye;
         UpdateViewMatrix();
@@ -29,15 +24,15 @@ public:
     glm::mat4x4 GetViewMatrix() const { return m_viewMatrix; }
     glm::mat4x4 GetProjMatrix() const { return m_projMatrix; }
     glm::vec3 GetEye() const { return m_eye; }
-	glm::vec3 GetUpVector() const { return m_upVector; }
-	glm::vec3 GetLookAt() const { return m_lookAt; }
-	glm::vec3 GetViewDir() const { return -glm::transpose(m_viewMatrix)[2]; }
-	glm::vec3 GetRightVector() const { return glm::transpose(m_viewMatrix)[0]; }
-	float GetFOV() const { return m_fov; }
+    glm::vec3 GetUpVector() const { return m_upVector; }
+    glm::vec3 GetLookAt() const { return m_lookAt; }
+    glm::vec3 GetViewDir() const { return -glm::transpose(m_viewMatrix)[2]; }
+    glm::vec3 GetRightVector() const { return glm::transpose(m_viewMatrix)[0]; }
+    float GetFOV() const { return m_fov; }
 
-	void SetFOV(float fov)
-    { 
-        m_fov = fov; 
+    void SetFOV(float fov)
+    {
+        m_fov = fov;
     }
 
     void UpdateViewMatrix()
@@ -47,7 +42,7 @@ public:
 
     void UpdateProjMatrix()
     {
-        m_projMatrix = glm::perspective(glm::radians(m_fov), m_width / m_height, 0.1f, 200000.0f );
+        m_projMatrix = glm::perspective(glm::radians(m_fov), m_width / m_height, 0.1f, 200000.0f);
     }
 
     void SetCameraView(glm::vec3 eye, glm::vec3 lookat, glm::vec3 up)
@@ -69,7 +64,7 @@ public:
 
         xAngleSub += xAngle;
         yAngleSub += yAngle;
-        
+
         float cosAngle = glm::dot(GetViewDir(), m_upVector);
         if (cosAngle * glm::sign(yAngle) > 0.99f)
             yAngle = 0;
@@ -119,10 +114,10 @@ public:
 private:
     glm::mat4x4 m_viewMatrix;
     glm::mat4x4 m_projMatrix;
-    glm::vec3 m_eye;                // Camera position in 3D
-    glm::vec3 m_eyeInitial;         // Camera position in 3D
-    glm::vec3 m_lookAt;             // Point that the camera is looking at
-    glm::vec3 m_upVector;           // Orientation of the camera
+    glm::vec3 m_eye;        // Camera position in 3D
+    glm::vec3 m_eyeInitial; // Camera position in 3D
+    glm::vec3 m_lookAt;     // Point that the camera is looking at
+    glm::vec3 m_upVector;   // Orientation of the camera
     float m_width;
     float m_height;
     float m_fov = 45;

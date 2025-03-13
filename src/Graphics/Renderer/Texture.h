@@ -18,19 +18,23 @@ public:
     void Unbind();
     void Delete();
 
-    std::string &getType() {
+    std::string &getType()
+    {
         return m_type;
     }
 
-    std::string &getPath() {
+    std::string &getPath()
+    {
         return m_filepath;
     }
 
-    std::string &getName() {
+    std::string &getName()
+    {
         return m_filename;
     }
 
-    GLuint getID() {
+    GLuint getID()
+    {
         return m_TextureID;
     }
 
@@ -41,7 +45,6 @@ private:
     std::string m_filepath;
     std::string m_filename;
     std::string m_tempname;
-
 };
 
 #endif

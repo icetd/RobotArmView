@@ -10,7 +10,7 @@ VertexArray::~VertexArray()
     glDeleteVertexArrays(1, &m_VertexArray_ID);
 }
 
-void VertexArray::AddBuffer(const VertexBuffer& vb, GLuint layout, GLuint numComponents, GLsizeiptr stride, void* offset)
+void VertexArray::AddBuffer(const VertexBuffer &vb, GLuint layout, GLuint numComponents, GLsizeiptr stride, void *offset)
 {
     vb.Bind();
     glVertexAttribPointer(layout, numComponents, GL_FLOAT, GL_FALSE, stride, offset);
