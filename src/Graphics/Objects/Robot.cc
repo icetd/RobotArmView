@@ -159,9 +159,9 @@ void Robot::addChildLinks(urdf::LinkConstSharedPtr link, ObjectStructure *parent
             geom = child->visual->geometry;
             glm::mat4 joint_transmat = glm::mat4(1.0f);
             joint_transmat = glm::translate(joint_transmat, glm::vec3(x, y, z));
-            joint_transmat = glm::rotate(joint_transmat, float(roll), glm::vec3(-1.0f, 0.0f, 0.0f));
-            joint_transmat = glm::rotate(joint_transmat, float(pitch), glm::vec3(0.0f, -1.0f, 0.0f));
-            joint_transmat = glm::rotate(joint_transmat, float(yaw), glm::vec3(0.0f, 0.0f, -1.0f));
+            joint_transmat = glm::rotate(joint_transmat, float(yaw), glm::vec3(0.0f, 0.0f, 1.0f));
+            joint_transmat = glm::rotate(joint_transmat, float(pitch), glm::vec3(0.0f, 1.0f, 0.0f));
+            joint_transmat = glm::rotate(joint_transmat, float(roll), glm::vec3(1.0f, 0.0f, 0.0f));
 
             glm::mat4 vis_transmat = glm::mat4(1.0f);
             child->visual->origin.rotation.getRPY(roll_, pitch_, yaw_);
@@ -169,9 +169,9 @@ void Robot::addChildLinks(urdf::LinkConstSharedPtr link, ObjectStructure *parent
             y_ = child->visual->origin.position.y;
             z_ = child->visual->origin.position.z;
             vis_transmat = glm::translate(vis_transmat, glm::vec3(x_, y_, z_));
-            vis_transmat = glm::rotate(vis_transmat, float(roll_), glm::vec3(1.0f, 0.0f, 0.0f));
-            vis_transmat = glm::rotate(vis_transmat, float(pitch_), glm::vec3(0.0f, 1.0f, 0.0f));
             vis_transmat = glm::rotate(vis_transmat, float(yaw_), glm::vec3(0.0f, 0.0f, 1.0f));
+            vis_transmat = glm::rotate(vis_transmat, float(pitch_), glm::vec3(0.0f, 1.0f, 0.0f));
+            vis_transmat = glm::rotate(vis_transmat, float(roll_), glm::vec3(1.0f, 0.0f, 0.0f));
 
             std::string mat_name;
 
