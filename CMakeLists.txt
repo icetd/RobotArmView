@@ -32,8 +32,8 @@ set (VLD_INCLUDE_DIR    "${CMAKE_SOURCE_DIR}/thirdparty/VLD/include")
 set (VLD_LIB_DIR        "${CMAKE_SOURCE_DIR}/thirdparty/VLD/lib")
 
 link_directories(
-        ${VLD_LIB_DIR}
-        ${FFMPEG_LIB_DIR}
+    ${VLD_LIB_DIR}
+    ${FFMPEG_LIB_DIR}
 )
 
 include_directories(
