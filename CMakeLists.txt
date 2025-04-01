@@ -16,41 +16,41 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set (SOURCE_DIR  "${CMAKE_CURRENT_LIST_DIR}/src") 
 set (INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/src")
 
-set (GLFW_INC			"${CMAKE_CURRENT_LIST_DIR}/thirdparty/glfw/include")
-set (GLAD_SRC			"${CMAKE_CURRENT_LIST_DIR}/thirdparty/glad/src")
-set (GLAD_INC			"${CMAKE_CURRENT_LIST_DIR}/thirdparty/glad/include")
-set (STB_IMAGE_INC		"${CMAKE_CURRENT_LIST_DIR}/thirdparty/stb_image")
-set (GLM_INC			"${CMAKE_CURRENT_LIST_DIR}/thirdparty/glm")
-set (ASSIMP_INC			"${CMAKE_CURRENT_LIST_DIR}/thirparty/assimp/include")
-set (IMPLOT_SRC			"${CMAKE_CURRENT_LIST_DIR}/thirdparty/implot")
-set (IMGUI_SRC			"${CMAKE_CURRENT_LIST_DIR}/thirdparty/imgui")
-set (IMGUIZMO_SRC		"${CMAKE_CURRENT_LIST_DIR}/thirdparty/ImGuizmo")
-set (IMPLOT_SRC			"${CMAKE_CURRENT_LIST_DIR}/thirdparty/implot")
+set (GLFW_INC           "${CMAKE_CURRENT_LIST_DIR}/thirdparty/glfw/include")
+set (GLAD_SRC           "${CMAKE_CURRENT_LIST_DIR}/thirdparty/glad/src")
+set (GLAD_INC           "${CMAKE_CURRENT_LIST_DIR}/thirdparty/glad/include")
+set (STB_IMAGE_INC      "${CMAKE_CURRENT_LIST_DIR}/thirdparty/stb_image")
+set (GLM_INC            "${CMAKE_CURRENT_LIST_DIR}/thirdparty/glm")
+set (ASSIMP_INC         "${CMAKE_CURRENT_LIST_DIR}/thirparty/assimp/include")
+set (IMPLOT_SRC         "${CMAKE_CURRENT_LIST_DIR}/thirdparty/implot")
+set (IMGUI_SRC          "${CMAKE_CURRENT_LIST_DIR}/thirdparty/imgui")
+set (IMGUIZMO_SRC       "${CMAKE_CURRENT_LIST_DIR}/thirdparty/ImGuizmo")
+set (IMPLOT_SRC         "${CMAKE_CURRENT_LIST_DIR}/thirdparty/implot")
 set (URDF_PARSER_INC    "${CMAKE_CURRENT_LIST_DIR}/thirdparty/urdf_parser/include")
 set (URDF_PARSER_SRC    "${CMAKE_CURRENT_LIST_DIR}/thirdparty/urdf_parser/src")
 set (VLD_INCLUDE_DIR    "${CMAKE_SOURCE_DIR}/thirdparty/VLD/include")
 set (VLD_LIB_DIR        "${CMAKE_SOURCE_DIR}/thirdparty/VLD/lib")
 
 link_directories(
-		${VLD_LIB_DIR}
-		${FFMPEG_LIB_DIR}
+        ${VLD_LIB_DIR}
+        ${FFMPEG_LIB_DIR}
 )
 
 include_directories(
-	${INCLUDE_DIR}
-	${GLFW_INC}
-	${GLAD_INC}
-	${STB_IMAGE_INC}
-	${GLM_INC}
-	${ASSIMP_INC}
-	${YAML_CPP_INC}
-	${IMGUI_SRC}
-	${FFMPEG_INCLUDE_DIR}
-	${IMPLOT_SRC}
-	${IMGUIZMO_SRC}
-	${SQLITE3_INC}
+    ${INCLUDE_DIR}
+    ${GLFW_INC}
+    ${GLAD_INC}
+    ${STB_IMAGE_INC}
+    ${GLM_INC}
+    ${ASSIMP_INC}
+    ${YAML_CPP_INC}
+    ${IMGUI_SRC}
+    ${FFMPEG_INCLUDE_DIR}
+    ${IMPLOT_SRC}
+    ${IMGUIZMO_SRC}
+    ${SQLITE3_INC}
     ${URDF_PARSER_INC}
-	${VLD_INCLUDE_DIR}
+    ${VLD_INCLUDE_DIR}
 ) 
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -63,20 +63,20 @@ file(GLOB_RECURSE SRC_FILES
     "${SOURCE_DIR}/Graphics/Io/*.c*"
     "${SOURCE_DIR}/Graphics/Ui/*.c*"
     "${SOURCE_DIR}/Core/*.c*"
-	"${IMGUIZMO_SRC}/*.c*"
-	"${GLAD_SRC}/*c*"
-	"${IMGUI_SRC}/*.c*"
-	"${IMPLOT_SRC}/*.c*"
+    "${IMGUIZMO_SRC}/*.c*"
+    "${GLAD_SRC}/*c*"
+    "${IMGUI_SRC}/*.c*"
+    "${IMPLOT_SRC}/*.c*"
     "${URDF_PARSER_SRC}/*.c*"
-	"${STB_IMAGE_INC}/*.h"
+    "${STB_IMAGE_INC}/*.h"
 )
 
 file (GLOB_RECURSE INC_FILES
     "${INCLUDE_DIR}/*.h"
-	"${IMGUI_SRC}/*.h"
-	"${IMPLOT_SRC}/*.h"
-	"${IMGUIZMO_SRC}/*.h"
-	"${GLAD_INC}/*h"
+    "${IMGUI_SRC}/*.h"
+    "${IMPLOT_SRC}/*.h"
+    "${IMGUIZMO_SRC}/*.h"
+    "${GLAD_INC}/*h"
 )
 
 file (GLOB_RECURSE RES_FILES
@@ -89,7 +89,7 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${INC_FILES})
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${RES_FILES})
 
 list(APPEND EXTRA_LIBS
-	ws2_32 assimp opengl32 glfw User32 Gdi32 Shell32 
+    ws2_32 assimp opengl32 glfw User32 Gdi32 Shell32 
 )
 
 add_executable(${PROJECT_NAME} ${SRC_FILES} ${INC_FILES} ${RES_FILES})
