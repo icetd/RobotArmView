@@ -36,9 +36,10 @@ void SceneRobotLayer::OnAttach()
     std::string urdfPath = "res/robot/dummy_robot/urdf/dummy_ros_sim.urdf";
     KDL::Tree tree;
     if (kdl_parser::treeFromFile(urdfPath, tree)) {
-        m_kinematics = std::make_unique<KDLKinematics>(tree, "base_link", "link6");
+        m_kinematics = std::make_unique<KDLKinematics>(tree, m_robot->getJointObjects()[0]->name, m_robot->getJointObjects()[m_robot->getJointObjects().size() - 1]->name);
     }
 
+    isIKalways = false;
     showAxis = true;
     showGrid = true;
 }
@@ -152,7 +153,7 @@ void SceneRobotLayer::ShowModelLoad()
             KDL::Tree tree;
 
             if (kdl_parser::treeFromFile(urdfPath, tree)) {
-                m_kinematics = std::make_unique<KDLKinematics>(tree, m_robot->getJointObjects()[0]->name, m_robot->getJointObjects()[m_robot->getJointObjects().size() -1]->name);
+                m_kinematics = std::make_unique<KDLKinematics>(tree, m_robot->getJointObjects()[0]->name, m_robot->getJointObjects()[m_robot->getJointObjects().size() - 1]->name);
             }
         }
     }
@@ -223,7 +224,7 @@ void SceneRobotLayer::ShowModelLoad()
 
     if (ImGui::Button("Solve FK")) {
         KDL::JntArray q(m_kinematics->getDOF());
-        for (int i = 0; i < q.rows(); i++) 
+        for (int i = 0; i < q.rows(); i++)
             q(i) = m_robot->getJointObjects()[i + 1]->getAngle() * deg2rad;
         KDL::Frame currentPose;
         if (m_kinematics->computeFK(q, currentPose)) {
@@ -234,7 +235,8 @@ void SceneRobotLayer::ShowModelLoad()
             targetX = pos.x() * 1000;
             targetY = pos.y() * 1000;
             targetZ = pos.z() * 1000;
-            targetRoll = rx * 180 / M_PI; rad2deg;
+            targetRoll = rx * 180 / M_PI;
+            rad2deg;
             targetPitch = ry * 180 / M_PI;
             targetYaw = rz * 180 / M_PI;
 
@@ -256,17 +258,17 @@ void SceneRobotLayer::ShowModelLoad()
 
     static bool ik_success;
 
-    if (ImGui::Button("Solve IK")) {
+    if (ImGui::Button("Solve IK") || isIKalways) {
         if (!m_kinematics->isValid()) {
             LOG(ERRO, "KDLKinematics not initialized");
         } else {
             int dof = m_kinematics->getDOF();
             KDL::JntArray q_seed(dof);
-            for (int i = 0; i < dof; i++) 
+            for (int i = 0; i < dof; i++)
                 q_seed(i) = 0.0f;
 
             KDL::Frame targetPose(
-                KDL::Rotation::RPY(targetRoll * deg2rad, targetPitch * deg2rad, targetYaw * deg2rad), 
+                KDL::Rotation::RPY(targetRoll * deg2rad, targetPitch * deg2rad, targetYaw * deg2rad),
                 KDL::Vector(targetX / 1000.0, targetY / 1000.0, targetZ / 1000.0));
 
             KDL::JntArray q_result;
@@ -286,7 +288,7 @@ void SceneRobotLayer::ShowModelLoad()
                         pos.x(), pos.y(), pos.z(),
                         rx * rad2deg, ry * rad2deg, rz * rad2deg);
                 }
-                ik_success =true;
+                ik_success = true;
             } else {
                 ik_success = false;
                 LOG(WARN, "IK Failed.");
@@ -296,6 +298,7 @@ void SceneRobotLayer::ShowModelLoad()
     ImGui::SameLine();
     (ik_success) ? ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "success") : ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "failed");
 
+    ImGui::Checkbox("ikAlways", &isIKalways);
     ImGui::Checkbox("Show Grid", &showGrid);
     ImGui::Checkbox("Show Axis", &showAxis);
 

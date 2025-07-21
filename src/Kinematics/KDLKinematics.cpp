@@ -36,7 +36,8 @@ bool KDLKinematics::computeFK(const KDL::JntArray &joint_positions, KDL::Frame &
     return fk_solver_->JntToCart(joint_positions, out_pose) >= 0;
 }
 
-inline double normalizeAngle(double angle) {
+inline double normalizeAngle(double angle)
+{
     angle = fmod(angle + M_PI, 2.0 * M_PI);
     if (angle < 0)
         angle += 2.0 * M_PI;
@@ -54,9 +55,9 @@ bool KDLKinematics::computeIK(const KDL::Frame &desired_pose,
 
     out_joint_positions = initial_guess;
     bool success;
-    //success = ik_pos_solver_->CartToJnt(initial_guess, desired_pose, out_joint_positions) >= 0;
+    // success = ik_pos_solver_->CartToJnt(initial_guess, desired_pose, out_joint_positions) >= 0;
     success = ik_solver_->CartToJnt(initial_guess, desired_pose, out_joint_positions) >= 0;
-    
+
     for (unsigned int i = 0; i < out_joint_positions.rows(); ++i) {
         out_joint_positions(i) = normalizeAngle(out_joint_positions(i));
     }

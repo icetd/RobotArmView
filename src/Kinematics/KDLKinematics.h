@@ -9,7 +9,8 @@
 #include <chainiksolverpos_lma.hpp>
 #include <memory>
 
-class KDLKinematics {
+class KDLKinematics
+{
 public:
     KDLKinematics(const KDL::Tree &robot_tree,
                   const std::string &base_link,
@@ -30,7 +31,7 @@ private:
     KDL::Chain kdl_chain_;
     std::unique_ptr<KDL::ChainFkSolverPos_recursive> fk_solver_;
     std::unique_ptr<KDL::ChainIkSolverVel_pinv> ik_vel_solver_;
-    std::unique_ptr<KDL::ChainIkSolverPos_NR_JL> ik_pos_solver_;  // 使用带限的求解器
+    std::unique_ptr<KDL::ChainIkSolverPos_NR_JL> ik_pos_solver_; // 使用带限的求解器
     std::unique_ptr<KDL::ChainIkSolverPos_LMA> ik_solver_;
-    KDL::JntArray q_min_, q_max_;  // 上下限
+    KDL::JntArray q_min_, q_max_; // 上下限
 };
