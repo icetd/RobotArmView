@@ -1,6 +1,7 @@
 #include "SceneRobotLayer.h"
 #include "../Core/Application.h"
 #include "../Core/Log.h"
+#include <set>
 #include <windows.h>
 #include <regex>
 #include <string>
@@ -29,7 +30,14 @@ void SceneRobotLayer::OnAttach()
     m_robot = new Robot();
     m_senceRobot = new SceneRobot(m_robot);
 
-    m_robot->loadURDF("res/robot/abb_irb2400_support/urdf/", "res/robot/abb_irb2400_support/urdf/irb2400.urdf");
+    m_robot->loadURDF("res/robot/dummy_robot/urdf/", "res/robot/dummy_robot/urdf/dummy_ros_sim.urdf");
+
+    // 加载 URDF 成功后初始化 KDLKinematics
+    std::string urdfPath = "res/robot/dummy_robot/urdf/dummy_ros_sim.urdf";
+    KDL::Tree tree;
+    if (kdl_parser::treeFromFile(urdfPath, tree)) {
+        m_kinematics = std::make_unique<KDLKinematics>(tree, "base_link", "link6");
+    }
 
     showAxis = true;
     showGrid = true;
@@ -139,6 +147,13 @@ void SceneRobotLayer::ShowModelLoad()
 
             m_robot->removeAll();
             m_robot->loadURDF(filepath, filename);
+
+            std::string urdfPath = filepath + "/" + filename;
+            KDL::Tree tree;
+
+            if (kdl_parser::treeFromFile(urdfPath, tree)) {
+                m_kinematics = std::make_unique<KDLKinematics>(tree, m_robot->getJointObjects()[0]->name, m_robot->getJointObjects()[m_robot->getJointObjects().size() -1]->name);
+            }
         }
     }
 
@@ -205,6 +220,82 @@ void SceneRobotLayer::ShowModelLoad()
             }
         }
     }
+
+    if (ImGui::Button("Solve FK")) {
+        KDL::JntArray q(m_kinematics->getDOF());
+        for (int i = 0; i < q.rows(); i++) 
+            q(i) = m_robot->getJointObjects()[i + 1]->getAngle() * deg2rad;
+        KDL::Frame currentPose;
+        if (m_kinematics->computeFK(q, currentPose)) {
+            double rx, ry, rz;
+            currentPose.M.GetRPY(rx, ry, rz);
+            KDL::Vector pos = currentPose.p;
+
+            targetX = pos.x() * 1000;
+            targetY = pos.y() * 1000;
+            targetZ = pos.z() * 1000;
+            targetRoll = rx * 180 / M_PI; rad2deg;
+            targetPitch = ry * 180 / M_PI;
+            targetYaw = rz * 180 / M_PI;
+
+            LOG(INFO, "FK result: pos = [%.3f, %.3f, %.3f]  rpy = [%.3f, %.3f, %.3f]",
+                pos.x(), pos.y(), pos.z(),
+                rx * rad2deg, ry * rad2deg, rz * rad2deg);
+        }
+    }
+
+    ImGui::Separator();
+    ImGui::Text("IK Target Pose");
+
+    ImGui::SliderFloat("Target X (mm)", &targetX, -2000, 2000);
+    ImGui::SliderFloat("Target Y (mm)", &targetY, -2000, 2000);
+    ImGui::SliderFloat("Target Z (mm)", &targetZ, -2000, 2000);
+    ImGui::SliderFloat("Roll (deg)", &targetRoll, -180, 180);
+    ImGui::SliderFloat("Pitch (deg)", &targetPitch, -180, 180);
+    ImGui::SliderFloat("Yaw (deg)", &targetYaw, -180, 180);
+
+    static bool ik_success;
+
+    if (ImGui::Button("Solve IK")) {
+        if (!m_kinematics->isValid()) {
+            LOG(ERRO, "KDLKinematics not initialized");
+        } else {
+            int dof = m_kinematics->getDOF();
+            KDL::JntArray q_seed(dof);
+            for (int i = 0; i < dof; i++) 
+                q_seed(i) = 0.0f;
+
+            KDL::Frame targetPose(
+                KDL::Rotation::RPY(targetRoll * deg2rad, targetPitch * deg2rad, targetYaw * deg2rad), 
+                KDL::Vector(targetX / 1000.0, targetY / 1000.0, targetZ / 1000.0));
+
+            KDL::JntArray q_result;
+            if (m_kinematics->computeIK(targetPose, q_seed, q_result)) {
+                for (int i = 0; i < dof; ++i) {
+                    m_robot->getJointObjects()[i + 1]->setAngle(q_result(i) * rad2deg);
+                }
+
+                // 再通过 FK 求出当前末端姿态
+                KDL::Frame currentPose;
+                if (m_kinematics->computeFK(q_result, currentPose)) {
+                    double rx, ry, rz;
+                    currentPose.M.GetRPY(rx, ry, rz);
+                    KDL::Vector pos = currentPose.p;
+
+                    LOG(INFO, "FK result: pos = [%.3f, %.3f, %.3f]  rpy = [%.3f, %.3f, %.3f]",
+                        pos.x(), pos.y(), pos.z(),
+                        rx * rad2deg, ry * rad2deg, rz * rad2deg);
+                }
+                ik_success =true;
+            } else {
+                ik_success = false;
+                LOG(WARN, "IK Failed.");
+            }
+        }
+    }
+    ImGui::SameLine();
+    (ik_success) ? ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "success") : ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "failed");
+
     ImGui::Checkbox("Show Grid", &showGrid);
     ImGui::Checkbox("Show Axis", &showAxis);
 

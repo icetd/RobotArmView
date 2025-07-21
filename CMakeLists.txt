@@ -9,7 +9,7 @@ add_subdirectory(thirdparty/assimp)
 add_definitions(-w)
 
 set (CMKAE_CXX_STANDARD 14)
-set (CMAKE_BUILD_TYPE Release)
+set (CMAKE_BUILD_TYPE Debug)
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -31,6 +31,10 @@ set (URDF_PARSER_SRC    "${CMAKE_CURRENT_LIST_DIR}/thirdparty/urdf_parser/src")
 set (VLD_INCLUDE_DIR    "${CMAKE_SOURCE_DIR}/thirdparty/VLD/include")
 set (VLD_LIB_DIR        "${CMAKE_SOURCE_DIR}/thirdparty/VLD/lib")
 
+set(ENGIN_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/thirdparty/eigen")
+set(KDL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/thirdparty/orocos_kdl/src")
+set(KDL_SRC_DIR "${CMAKE_SOURCE_DIR}/thirdparty/orocos_kdl/src")
+
 link_directories(
     ${VLD_LIB_DIR}
     ${FFMPEG_LIB_DIR}
@@ -42,6 +46,8 @@ include_directories(
     ${GLAD_INC}
     ${STB_IMAGE_INC}
     ${GLM_INC}
+    ${ENGIN_INCLUDE_DIR}
+    ${KDL_INCLUDE_DIR}
     ${ASSIMP_INC}
     ${YAML_CPP_INC}
     ${IMGUI_SRC}
@@ -62,12 +68,14 @@ file(GLOB_RECURSE SRC_FILES
     "${SOURCE_DIR}/Graphics/Objects/*.c*"
     "${SOURCE_DIR}/Graphics/Io/*.c*"
     "${SOURCE_DIR}/Graphics/Ui/*.c*"
+    "${SOURCE_DIR}/Kinematics/*.c*"
     "${SOURCE_DIR}/Core/*.c*"
     "${IMGUIZMO_SRC}/*.c*"
     "${GLAD_SRC}/*c*"
     "${IMGUI_SRC}/*.c*"
     "${IMPLOT_SRC}/*.c*"
     "${URDF_PARSER_SRC}/*.c*"
+    "${KDL_SRC_DIR}/*.c*"
     "${STB_IMAGE_INC}/*.h"
 )
 

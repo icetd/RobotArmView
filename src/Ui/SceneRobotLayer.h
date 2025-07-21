@@ -8,6 +8,8 @@
 #include "../Graphics/Renderer/Camera.h"
 #include "../Graphics/Renderer/Renderer.h"
 #include "../Graphics/Renderer/Shader.h"
+#include "Kinematics/KDLKinematics.h"
+#include "Kinematics/kdl_parser.h"
 
 class SceneRobotLayer : public Layer
 {
@@ -42,6 +44,14 @@ private:
     void ShowModelSence();
     void ShowModelLoad();
     void convertPath(char *path);
+    
+    const double deg2rad = 0.017453292519943295769236907684886127; // PI/180
+    const double rad2deg = 57.29577951308232087679815481410517033; // 180/PI
+
+    std::unique_ptr<KDLKinematics> m_kinematics;
+    // IK 控制目标
+    float targetX = 0, targetY = 0, targetZ = 0;
+    float targetRoll = 0, targetPitch = 0, targetYaw = 0;
 };
 
 #endif
