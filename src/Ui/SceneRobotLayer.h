@@ -31,6 +31,7 @@ private:
     Shader *m_TextureShader;
     Shader *m_ColorLightShader;
     Shader *m_ColorShader;
+    Shader *m_ColorDShader;
 
     float m_width;
     float m_height;
@@ -40,6 +41,7 @@ private:
     SceneRobot *m_senceRobot;
     bool showGrid;
     bool showAxis;
+    bool showProjectionLines;
 
     void ShowModelSence();
     void ShowModelLoad();

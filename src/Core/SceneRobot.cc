@@ -22,6 +22,7 @@ SceneRobot::SceneRobot(Robot *robot) :
 
     GenerateXYZ(0.2);
     m_XYZRender = new Renderer(m_verticesXYZ, m_indicesXYZ, m_emptyTexture);
+    
 }
 
 SceneRobot::~SceneRobot()
@@ -104,6 +105,7 @@ void SceneRobot::DrawAxis(Shader &shader, Camera &camera)
         m_axisRender->DrawTriangle(shader, GL_FILL);
         m_XYZRender->DrawLine(shader);
     }
+
 }
 
 
@@ -332,3 +334,60 @@ void SceneRobot::GenerateAxis(float length)
     m_axisRender = new Renderer(m_verticesAxis, m_indicesAxis, m_emptyTexture);
 }
 #endif
+
+void SceneRobot::GenerateVerticalLines()
+{
+    m_verticesVerticalLines.clear();
+    m_indicesVerticalLines.clear();
+
+    const auto& joints = m_robot->getJointObjects();
+    if (joints.empty()) return;
+
+    // 只取最后一个关节
+    ObjectStructure* jointObj = joints.back();
+
+    glm::mat4 modelMat = m_robot->calTransMat(jointObj);
+    glm::vec3 jointPos = glm::vec3(modelMat[3]); // 关节在世界坐标的位置
+    glm::vec3 projPos = glm::vec3(jointPos.x, jointPos.y, 0.0f); // 投影到XY平面
+
+    int idx = 0;
+
+    // 垂线1：原始点 -> 投影到XY平面
+    m_verticesVerticalLines.push_back(Vertex{jointPos, glm::vec3(0.0f, 1.0f, 0.0f)});
+    m_verticesVerticalLines.push_back(Vertex{projPos, glm::vec3(0.0f, 1.0f, 0.0f)});
+    m_indicesVerticalLines.push_back(idx++);
+    m_indicesVerticalLines.push_back(idx++);
+
+    // 垂线2：投影点 -> Y轴
+    glm::vec3 xAxisProj(0.0f, projPos.y, 0.0f);
+    m_verticesVerticalLines.push_back(Vertex{projPos, glm::vec3(0.0f, 1.0f, 0.0f)});
+    m_verticesVerticalLines.push_back(Vertex{xAxisProj, glm::vec3(0.0f, 1.0f, 0.0f)});
+    m_indicesVerticalLines.push_back(idx++);
+    m_indicesVerticalLines.push_back(idx++);
+
+    // 垂线3：投影点 -> X轴
+    glm::vec3 yAxisProj(projPos.x, 0.0f, 0.0f);
+    m_verticesVerticalLines.push_back(Vertex{projPos, glm::vec3(0.0f, 1.0f, 0.0f)});
+    m_verticesVerticalLines.push_back(Vertex{yAxisProj, glm::vec3(0.0f, 1.0f, 0.0f)});
+    m_indicesVerticalLines.push_back(idx++);
+    m_indicesVerticalLines.push_back(idx++);
+
+    if (m_verticalLineRender) {
+        delete m_verticalLineRender;
+        m_verticalLineRender = nullptr;
+    }
+    m_verticalLineRender = new Renderer(m_verticesVerticalLines, m_indicesVerticalLines, m_emptyTexture);
+}
+
+// 绘制垂线
+void SceneRobot::DrawVerticalLines(Shader &shader, Camera &camera)
+{
+    GenerateVerticalLines();
+    if (!m_verticalLineRender) return;
+    shader.Bind();
+    shader.SetUniformMat4f("model", glm::mat4(1.0f));
+    shader.SetUniformMat4f("projection", camera.GetProjMatrix());
+    shader.SetUniformMat4f("view", camera.GetViewMatrix());
+    shader.SetUniformVec3f("camPos", camera.GetEye());
+    m_verticalLineRender->DrawLine(shader);
+}

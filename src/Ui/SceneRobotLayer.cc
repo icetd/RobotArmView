@@ -23,6 +23,7 @@ void SceneRobotLayer::OnAttach()
 
     m_ColorLightShader = new Shader("res/shaders/ColorLight.shader");
     m_ColorShader = new Shader("res/shaders/Color.shader");
+    m_ColorDShader = new Shader("res/shaders/ColorD.shader");
 
     m_camera = new Camera(eye, lookat, upVector, width, height);
     Application::GetInstance()->InitCamera(m_camera, m_frameBuffer);
@@ -42,6 +43,7 @@ void SceneRobotLayer::OnAttach()
     isIKalways = false;
     showAxis = true;
     showGrid = true;
+    showProjectionLines = true;
 }
 
 void SceneRobotLayer::OnUpdate(float ts)
@@ -58,6 +60,8 @@ void SceneRobotLayer::OnUpdate(float ts)
         m_senceRobot->DrawGrid(*m_ColorShader, *m_camera);
     if (showAxis)
         m_senceRobot->DrawAxis(*m_ColorShader, *m_camera);
+    if (showProjectionLines)
+        m_senceRobot->DrawVerticalLines(*m_ColorDShader, *m_camera);
 
     m_frameBuffer->Unbind();
 
@@ -299,7 +303,10 @@ void SceneRobotLayer::ShowModelLoad()
 
     ImGui::Checkbox("ikAlways", &isIKalways);
     ImGui::Checkbox("Show Grid", &showGrid);
+    ImGui::SameLine();
     ImGui::Checkbox("Show Axis", &showAxis);
+    ImGui::SameLine();
+    ImGui::Checkbox("Show ProjectionLines", &showProjectionLines);
 
     ImGui::Separator();
     ImGui::End();

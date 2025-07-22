@@ -14,7 +14,7 @@ public:
     void UpdateStatus(Shader &shader, Camera &camera);
     void DrawGrid(Shader &shader, Camera &camera);
     void DrawAxis(Shader &shader, Camera &camera);
-
+    void DrawVerticalLines(Shader &shader, Camera &camera);
 private:
     float m_platfromSize = 100.0f;
     int slices = m_platfromSize;
@@ -37,6 +37,10 @@ private:
     void GenerateAxis(float length);
     void GenerateXYZ(float length);
 
+    std::vector<Vertex> m_verticesVerticalLines;
+    std::vector<GLuint> m_indicesVerticalLines;
+    Renderer *m_verticalLineRender = nullptr;
+    void GenerateVerticalLines();
     Robot *m_robot;
 };
 
