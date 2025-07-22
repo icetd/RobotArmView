@@ -235,10 +235,9 @@ void SceneRobotLayer::ShowModelLoad()
             targetX = pos.x() * 1000;
             targetY = pos.y() * 1000;
             targetZ = pos.z() * 1000;
-            targetRoll = rx * 180 / M_PI;
-            rad2deg;
-            targetPitch = ry * 180 / M_PI;
-            targetYaw = rz * 180 / M_PI;
+            targetRoll = rx * rad2deg;
+            targetPitch = ry * rad2deg;
+            targetYaw = rz * rad2deg;
 
             LOG(INFO, "FK result: pos = [%.3f, %.3f, %.3f]  rpy = [%.3f, %.3f, %.3f]",
                 pos.x(), pos.y(), pos.z(),
