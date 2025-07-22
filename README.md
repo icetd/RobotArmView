@@ -13,3 +13,7 @@ then open the RobotArmView.sln
 ## Demo
 
 ![image-20241214023126978](pic/demoik.gif)
+
+## applicability
+
+Suitable for chain robot arms
