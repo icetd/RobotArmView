@@ -1,5 +1,5 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v1.91.3 WIP
+// v 1.89 WIP
 //
 // The MIT License(MIT)
 //
@@ -148,7 +148,7 @@ namespace ImCurveEdit
       ImGuiIO& io = ImGui::GetIO();
       ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
       ImGui::PushStyleColor(ImGuiCol_Border, 0);
-      ImGui::BeginChild(id, size, ImGuiChildFlags_FrameStyle);
+      ImGui::BeginChildFrame(id, size);
       delegate.focused = ImGui::IsWindowFocused();
       ImDrawList* draw_list = ImGui::GetWindowDrawList();
       if (clippingRect)
@@ -441,7 +441,7 @@ namespace ImCurveEdit
       if (clippingRect)
          draw_list->PopClipRect();
 
-      ImGui::EndChild();
+      ImGui::EndChildFrame();
       ImGui::PopStyleVar();
       ImGui::PopStyleColor(1);
 

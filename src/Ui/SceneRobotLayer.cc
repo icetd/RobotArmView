@@ -110,10 +110,9 @@ void SceneRobotLayer::ShowModelSence()
 
         if (isIkDragMode) {
             // ImGuizmo 控制末端
-            ImGuizmo::SetOrthographic(true);
+            ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
             ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
-            ImGuizmo::Style &style = ImGuizmo::GetStyle();
 
             ImGuizmo::Manipulate(glm::value_ptr(m_view), glm::value_ptr(m_proj),
                                  ImGuizmo::OPERATION::TRANSLATE | ImGuizmo::OPERATION::ROTATE,
@@ -366,8 +365,6 @@ void SceneRobotLayer::ShowModelLoad()
                 ik_success = false;
                 LOG(WARN, "IK Failed.");
             }
-
-
         }
     }
     ImGui::SameLine();
@@ -393,7 +390,6 @@ void SceneRobotLayer::ShowModelLoad()
     ImGui::SameLine();
     ImGui::Checkbox("Show ProjectionLines", &showProjectionLines);
 
-    
     ImGui::Separator();
     ImGui::End();
 }
@@ -408,25 +404,27 @@ void SceneRobotLayer::convertPath(char *path)
     }
 }
 
-glm::mat4 SceneRobotLayer::toGlmMatrix(const KDL::Frame& frame) {
-    glm::mat4 result(1.0f);  // 初始化为单位矩阵
+glm::mat4 SceneRobotLayer::toGlmMatrix(const KDL::Frame &frame)
+{
+    glm::mat4 result(1.0f); // 初始化为单位矩阵
 
     for (int i = 0; i < 3; ++i) {
-        result[0][i] = frame.M(i, 0);  // X轴方向向量
-        result[1][i] = frame.M(i, 1);  // Y轴方向向量
-        result[2][i] = frame.M(i, 2);  // Z轴方向向量
-        result[3][i] = frame.p[i];     // 平移部分
+        result[0][i] = frame.M(i, 0); // X轴方向向量
+        result[1][i] = frame.M(i, 1); // Y轴方向向量
+        result[2][i] = frame.M(i, 2); // Z轴方向向量
+        result[3][i] = frame.p[i];    // 平移部分
     }
 
     return result;
 }
 
-KDL::Frame SceneRobotLayer::fromGlmMatrix(const glm::mat4& mat) {
+KDL::Frame SceneRobotLayer::fromGlmMatrix(const glm::mat4 &mat)
+{
     KDL::Rotation R(mat[0][0], mat[1][0], mat[2][0],  // X轴
                     mat[0][1], mat[1][1], mat[2][1],  // Y轴
                     mat[0][2], mat[1][2], mat[2][2]); // Z轴
 
-    KDL::Vector p(mat[3][0], mat[3][1], mat[3][2]);    // 平移向量
+    KDL::Vector p(mat[3][0], mat[3][1], mat[3][2]); // 平移向量
 
     return KDL::Frame(R, p);
 }

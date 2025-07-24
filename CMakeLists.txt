@@ -28,6 +28,9 @@ set (IMGUIZMO_SRC       "${CMAKE_CURRENT_LIST_DIR}/thirdparty/ImGuizmo")
 set (IMPLOT_SRC         "${CMAKE_CURRENT_LIST_DIR}/thirdparty/implot")
 set (URDF_PARSER_INC    "${CMAKE_CURRENT_LIST_DIR}/thirdparty/urdf_parser/include")
 set (URDF_PARSER_SRC    "${CMAKE_CURRENT_LIST_DIR}/thirdparty/urdf_parser/src")
+set (NLOPT_INC          "${CMAKE_CURRENT_LIST_DIR}/thirdparty/nlopt/include")
+set (NLOPT_LIB          "${CMAKE_CURRENT_LIST_DIR}/thirdparty/nlopt/lib")
+
 set (VLD_INCLUDE_DIR    "${CMAKE_SOURCE_DIR}/thirdparty/VLD/include")
 set (VLD_LIB_DIR        "${CMAKE_SOURCE_DIR}/thirdparty/VLD/lib")
 
@@ -37,7 +40,7 @@ set(KDL_SRC_DIR "${CMAKE_SOURCE_DIR}/thirdparty/orocos_kdl/src")
 
 link_directories(
     ${VLD_LIB_DIR}
-    ${FFMPEG_LIB_DIR}
+    ${NLOPT_LIB}
 )
 
 include_directories(
@@ -56,6 +59,7 @@ include_directories(
     ${IMGUIZMO_SRC}
     ${SQLITE3_INC}
     ${URDF_PARSER_INC}
+    ${NLOPT_INC}
     ${VLD_INCLUDE_DIR}
 ) 
 
@@ -69,6 +73,7 @@ file(GLOB_RECURSE SRC_FILES
     "${SOURCE_DIR}/Graphics/Io/*.c*"
     "${SOURCE_DIR}/Graphics/Ui/*.c*"
     "${SOURCE_DIR}/Kinematics/*.c*"
+    "${SOURCE_DIR}/Kinematics/trac_ik/*.c*"
     "${SOURCE_DIR}/Core/*.c*"
     "${IMGUIZMO_SRC}/*.c*"
     "${GLAD_SRC}/*c*"
@@ -97,7 +102,7 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${INC_FILES})
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${RES_FILES})
 
 list(APPEND EXTRA_LIBS
-    ws2_32 assimp opengl32 glfw User32 Gdi32 Shell32 
+    ws2_32 assimp nlopt opengl32 glfw User32 Gdi32 Shell32 
 )
 
 add_executable(${PROJECT_NAME} ${SRC_FILES} ${INC_FILES} ${RES_FILES})
@@ -114,5 +119,5 @@ SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/output)
 
 file(COPY ${CMAKE_SOURCE_DIR}/res DESTINATION ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})
 file(COPY ${CMAKE_SOURCE_DIR}/configs DESTINATION ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})
-file (GLOB FFMPEG_COPY_DLL "${CMAKE_SOURCE_DIR}/thirdparty/FFmpeg/dll/*")
+file (GLOB FFMPEG_COPY_DLL "${CMAKE_SOURCE_DIR}/thirdparty/nlopt/lib/*")
 file(COPY ${FFMPEG_COPY_DLL} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})

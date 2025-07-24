@@ -1,5 +1,5 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v1.91.3 WIP
+// v 1.89 WIP
 //
 // The MIT License(MIT)
 //
@@ -311,7 +311,7 @@ static void HandleQuadSelection(Delegate& delegate, ImDrawList* drawList, const 
 
             nodeOperation = NO_None;
             ImRect selectionRect(bmin, bmax);
-            for (unsigned int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++)
+            for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++)
             {
                 const auto node = delegate.GetNode(nodeIndex);
                 ImVec2 nodeRectangleMin = offset + node.mRect.Min * factor;
@@ -469,7 +469,7 @@ static bool HandleConnections(ImDrawList* drawList,
 
                     if (!alreadyExisting)
                     {
-                        for (unsigned int linkIndex = 0; linkIndex < linkCount; linkIndex++)
+                        for (int linkIndex = 0; linkIndex < linkCount; linkIndex++)
                         {
                             const auto link = delegate.GetLink(linkIndex);
                             if (link.mOutputNodeIndex == nl.mOutputNodeIndex && link.mOutputSlotIndex == nl.mOutputSlotIndex)
@@ -497,7 +497,7 @@ static bool HandleConnections(ImDrawList* drawList,
                 if (editingInput)
                 {
                     // remove existing link
-                    for (unsigned int linkIndex = 0; linkIndex < linkCount; linkIndex++)
+                    for (int linkIndex = 0; linkIndex < linkCount; linkIndex++)
                     {
                         const auto link = delegate.GetLink(linkIndex);
                         if (link.mOutputNodeIndex == nodeIndex && link.mOutputSlotIndex == closestConn)
@@ -837,7 +837,7 @@ void Show(Delegate& delegate, const Options& options, ViewState& viewState, bool
     captureOffset = viewState.mPosition * viewState.mFactor;
 
     //ImGui::InvisibleButton("GraphEditorButton", canvasSize);
-    ImGui::BeginChild(71711, canvasSize, ImGuiChildFlags_FrameStyle);
+    ImGui::BeginChildFrame(71711, canvasSize);
 
     ImGui::SetCursorPos(windowPos);
     ImGui::BeginGroup();
@@ -1030,7 +1030,7 @@ void Show(Delegate& delegate, const Options& options, ViewState& viewState, bool
     ImGui::PopStyleColor(1);
     ImGui::PopStyleVar(2);
     ImGui::EndGroup();
-    ImGui::EndChild();
+    ImGui::EndChildFrame();
 
     ImGui::PopStyleVar(3);
     

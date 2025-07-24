@@ -1,5 +1,5 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v1.91.3 WIP
+// v 1.89 WIP
 //
 // The MIT License(MIT)
 //
@@ -67,7 +67,7 @@ namespace ImGradient
       bool ret = false;
       ImGuiIO& io = ImGui::GetIO();
       ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-      ImGui::BeginChild(137, size, ImGuiChildFlags_FrameStyle);
+      ImGui::BeginChildFrame(137, size);
 
       ImDrawList* draw_list = ImGui::GetWindowDrawList();
       const ImVec2 offset = ImGui::GetCursorScreenPos();
@@ -107,7 +107,7 @@ namespace ImGradient
          delegate.AddPoint(delegate.GetPoint(t));
          ret = true;
       }
-      ImGui::EndChild();
+      ImGui::EndChildFrame();
       ImGui::PopStyleVar();
 
       selection = currentSelection;
