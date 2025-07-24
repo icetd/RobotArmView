@@ -1,4 +1,4 @@
-#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -17,7 +17,7 @@
 
 int main(int argc, char **argv)
 {
-    initLogger(INFO);
+    initLogger(ERRO);
     Application *app = new Application("RobotView", 1920, 1080);
     app->PushLayer<MainLayer>();
     app->PushLayer<SceneRobotLayer>();

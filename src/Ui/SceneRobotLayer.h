@@ -52,10 +52,16 @@ private:
 
     std::unique_ptr<KDLKinematics> m_kinematics;
     // IK 控制目标
+    bool isIkSiledrMode;
     float targetX = 0, targetY = 0, targetZ = 0;
     float targetRoll = 0, targetPitch = 0, targetYaw = 0;
 
-    bool isIKalways;
+
+    bool isIkDragMode;
+    glm::mat4 m_endEffectorMatrix; // ImGuizmo 矩阵缓存
+    glm::mat4 m_lastIkSuccessMatrix;
+    glm::mat4 SceneRobotLayer::toGlmMatrix(const KDL::Frame &frame);
+    KDL::Frame SceneRobotLayer::fromGlmMatrix(const glm::mat4 &mat);
 };
 
 #endif

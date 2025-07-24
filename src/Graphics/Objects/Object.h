@@ -105,4 +105,6 @@ struct ObjectStructure {
         this->joint_transmat = glm::translate(objModelInit, translation);
     }
     float getPos() { return curPos; }
+
+    glm::mat4 getJointModel() { return joint_transmat; }
 };

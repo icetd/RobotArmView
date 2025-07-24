@@ -40,8 +40,18 @@ void SceneRobotLayer::OnAttach()
         m_kinematics = std::make_unique<KDLKinematics>(tree, m_robot->getJointObjects()[0]->name, m_robot->getJointObjects()[m_robot->getJointObjects().size() - 1]->name);
     }
 
-    isIKalways = false;
-    showAxis = true;
+    KDL::JntArray q(m_kinematics->getDOF());
+    for (int i = 0; i < q.rows(); i++)
+        q(i) = m_robot->getJointObjects()[i + 1]->getAngle() * deg2rad;
+
+    KDL::Frame eeFrame;
+    if (m_kinematics->computeFK(q, eeFrame)) {
+        m_endEffectorMatrix = toGlmMatrix(eeFrame);
+    }
+
+    isIkSiledrMode = false;
+    isIkDragMode = false;
+    showAxis = false;
     showGrid = true;
     showProjectionLines = true;
 }
@@ -97,6 +107,35 @@ void SceneRobotLayer::ShowModelSence()
 
         // load framebuffer
         ImGui::Image((ImTextureID)m_frameBuffer->GetFrameTexture(), ImGui::GetContentRegionAvail(), ImVec2(0, 1), ImVec2(1, 0));
+
+        if (isIkDragMode) {
+            // ImGuizmo 控制末端
+            ImGuizmo::SetOrthographic(true);
+            ImGuizmo::SetDrawlist();
+            ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
+            ImGuizmo::Style &style = ImGuizmo::GetStyle();
+
+            ImGuizmo::Manipulate(glm::value_ptr(m_view), glm::value_ptr(m_proj),
+                                 ImGuizmo::OPERATION::TRANSLATE | ImGuizmo::OPERATION::ROTATE,
+                                 ImGuizmo::MODE::LOCAL, glm::value_ptr(m_endEffectorMatrix));
+
+            // 拖动后求IK
+            KDL::Frame targetPose = fromGlmMatrix(m_endEffectorMatrix);
+            KDL::JntArray q_seed(m_kinematics->getDOF());
+            for (int i = 0; i < q_seed.rows(); ++i)
+                q_seed(i) = 0.0;
+
+            KDL::JntArray q_result;
+            if (m_kinematics->computeIK(targetPose, q_seed, q_result)) {
+                for (int i = 0; i < q_result.rows(); ++i)
+                    m_robot->getJointObjects()[i + 1]->setAngle(q_result(i) * rad2deg);
+                m_lastIkSuccessMatrix = m_endEffectorMatrix;
+                LOG(INFO, "IK from ImGuizmo success");
+            } else {
+                m_endEffectorMatrix = m_lastIkSuccessMatrix;
+                LOG(WARN, "IK from ImGuizmo failed");
+            }
+        }
     }
     ImGui::EndChild();
     ImGui::End();
@@ -158,6 +197,15 @@ void SceneRobotLayer::ShowModelLoad()
 
             if (kdl_parser::treeFromFile(urdfPath, tree)) {
                 m_kinematics = std::make_unique<KDLKinematics>(tree, m_robot->getJointObjects()[0]->name, m_robot->getJointObjects()[m_robot->getJointObjects().size() - 1]->name);
+            }
+
+            KDL::JntArray q(m_kinematics->getDOF());
+            for (int i = 0; i < q.rows(); i++)
+                q(i) = m_robot->getJointObjects()[i + 1]->getAngle() * deg2rad;
+
+            KDL::Frame eeFrame;
+            if (m_kinematics->computeFK(q, eeFrame)) {
+                m_endEffectorMatrix = toGlmMatrix(eeFrame);
             }
         }
     }
@@ -247,6 +295,27 @@ void SceneRobotLayer::ShowModelLoad()
                 pos.x(), pos.y(), pos.z(),
                 rx * rad2deg, ry * rad2deg, rz * rad2deg);
         }
+
+        m_endEffectorMatrix = toGlmMatrix(currentPose);
+    }
+
+    if (isIkDragMode) {
+        KDL::Frame currentPose;
+        double rx, ry, rz;
+        currentPose = fromGlmMatrix(m_endEffectorMatrix);
+        currentPose.M.GetRPY(rx, ry, rz);
+        KDL::Vector pos = currentPose.p;
+
+        targetX = pos.x() * 1000;
+        targetY = pos.y() * 1000;
+        targetZ = pos.z() * 1000;
+        targetRoll = rx * rad2deg;
+        targetPitch = ry * rad2deg;
+        targetYaw = rz * rad2deg;
+
+        LOG(INFO, "FK result: pos = [%.3f, %.3f, %.3f]  rpy = [%.3f, %.3f, %.3f]",
+            pos.x(), pos.y(), pos.z(),
+            rx * rad2deg, ry * rad2deg, rz * rad2deg);
     }
 
     ImGui::Separator();
@@ -261,7 +330,7 @@ void SceneRobotLayer::ShowModelLoad()
 
     static bool ik_success;
 
-    if (ImGui::Button("Solve IK") || isIKalways) {
+    if (ImGui::Button("Solve IK") || isIkSiledrMode) {
         if (!m_kinematics->isValid()) {
             LOG(ERRO, "KDLKinematics not initialized");
         } else {
@@ -291,23 +360,40 @@ void SceneRobotLayer::ShowModelLoad()
                         pos.x(), pos.y(), pos.z(),
                         rx * rad2deg, ry * rad2deg, rz * rad2deg);
                 }
+                m_endEffectorMatrix = toGlmMatrix(currentPose);
                 ik_success = true;
             } else {
                 ik_success = false;
                 LOG(WARN, "IK Failed.");
             }
+
+
         }
     }
     ImGui::SameLine();
     (ik_success) ? ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "success") : ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "failed");
 
-    ImGui::Checkbox("ikAlways", &isIKalways);
+    if (ImGui::Checkbox("IkSilderMode", &isIkSiledrMode)) {
+        if (isIkSiledrMode) {
+            isIkDragMode = false;
+        }
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Checkbox("IkDragMode", &isIkDragMode)) {
+        if (isIkDragMode) {
+            isIkSiledrMode = false;
+        }
+    }
+
     ImGui::Checkbox("Show Grid", &showGrid);
     ImGui::SameLine();
     ImGui::Checkbox("Show Axis", &showAxis);
     ImGui::SameLine();
     ImGui::Checkbox("Show ProjectionLines", &showProjectionLines);
 
+    
     ImGui::Separator();
     ImGui::End();
 }
@@ -320,4 +406,27 @@ void SceneRobotLayer::convertPath(char *path)
         }
         path++;
     }
+}
+
+glm::mat4 SceneRobotLayer::toGlmMatrix(const KDL::Frame& frame) {
+    glm::mat4 result(1.0f);  // 初始化为单位矩阵
+
+    for (int i = 0; i < 3; ++i) {
+        result[0][i] = frame.M(i, 0);  // X轴方向向量
+        result[1][i] = frame.M(i, 1);  // Y轴方向向量
+        result[2][i] = frame.M(i, 2);  // Z轴方向向量
+        result[3][i] = frame.p[i];     // 平移部分
+    }
+
+    return result;
+}
+
+KDL::Frame SceneRobotLayer::fromGlmMatrix(const glm::mat4& mat) {
+    KDL::Rotation R(mat[0][0], mat[1][0], mat[2][0],  // X轴
+                    mat[0][1], mat[1][1], mat[2][1],  // Y轴
+                    mat[0][2], mat[1][2], mat[2][2]); // Z轴
+
+    KDL::Vector p(mat[3][0], mat[3][1], mat[3][2]);    // 平移向量
+
+    return KDL::Frame(R, p);
 }
