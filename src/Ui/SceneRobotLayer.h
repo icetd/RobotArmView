@@ -62,6 +62,9 @@ private:
     glm::mat4 m_lastIkSuccessMatrix;
     glm::mat4 SceneRobotLayer::toGlmMatrix(const KDL::Frame &frame);
     KDL::Frame SceneRobotLayer::fromGlmMatrix(const glm::mat4 &mat);
+
+    bool isOpenCollisionDetection;
+    bool showAABB;
 };
 
 #endif

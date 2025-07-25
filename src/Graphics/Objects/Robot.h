@@ -15,6 +15,8 @@
 #include "Model.h"
 #include "Object.h"
 
+#include "Physics/BulletCollisionManager.h"
+
 class Robot
 {
 public:
@@ -29,6 +31,8 @@ public:
     std::vector<ObjectStructure *> &getJointObjects() { return m_JointObjects; }
     glm::mat4 calTransMat(ObjectStructure *link);
 
+    bool getSelfCollisionStatus();
+
 private:
     std::string m_name;
     std::string m_token;
@@ -38,6 +42,8 @@ private:
     std::vector<ObjectStructure *> m_JointObjects;
 
     void addChildLinks(urdf::LinkConstSharedPtr link, ObjectStructure *parent);
+
+    BulletCollisionManager collisionMgr;
 };
 
 #endif

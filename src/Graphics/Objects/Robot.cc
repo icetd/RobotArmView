@@ -8,8 +8,7 @@
 const glm::mat4 init = glm::mat4(1.0f);
 
 Robot::Robot()
-{
-}
+{}
 
 Robot::~Robot()
 {
@@ -33,6 +32,11 @@ glm::mat4 Robot::calTransMat(ObjectStructure *link)
     return calTransMat(link->parent) * link->joint_transmat * link->vis_transmat;
 }
 
+bool Robot::getSelfCollisionStatus()
+{
+    return collisionMgr.checkCollisions();
+}
+
 void Robot::updateJointAngles(Shader &shader, Camera &camera)
 {
     for (int i = 0; i < m_JointObjects.size(); i++) {
@@ -40,19 +44,25 @@ void Robot::updateJointAngles(Shader &shader, Camera &camera)
             m_joint = new Model(m_JointObjects[i]);
             m_Joints.push_back(m_joint);
             m_JointObjects[i]->modelDefined = true;
+            // 添加碰撞对
+            collisionMgr.addObject(m_JointObjects[i]->name, m_joint);
         }
     }
 
     for (int i = 0; i < m_JointObjects.size(); i++) {
         shader.Bind();
-        glm::vec3 lightPos = glm::vec3(0.0f, 20.0f, 20.0f);
-        shader.SetUniformMat4f("model", calTransMat(m_JointObjects[i]));
+        glm::vec3 lightPos = camera.GetEye();
+        glm::mat4 modelMat = calTransMat(m_JointObjects[i]);
+        shader.SetUniformMat4f("model", modelMat);
         shader.SetUniformMat4f("projection", camera.GetProjMatrix());
         shader.SetUniformMat4f("view", camera.GetViewMatrix());
         shader.SetUniformVec3f("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
         shader.SetUniformVec3f("lightPos", lightPos);
         shader.SetUniformVec3f("camPos", camera.GetEye());
         m_Joints[i]->Draw(shader, GL_FILL);
+
+        // 更新碰撞物体变换
+        collisionMgr.updateObjectTransform(i, modelMat);
 
         // update status
         m_JointObjects[i]->objTranslation = m_JointObjects[i]->joint_transmat[3];
@@ -262,4 +272,5 @@ void Robot::removeAll()
 {
     std::vector<ObjectStructure *>().swap(m_JointObjects);
     std::vector<Model *>().swap(m_Joints);
+    collisionMgr.clear();
 }

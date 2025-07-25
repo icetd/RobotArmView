@@ -18,6 +18,8 @@ then open the RobotArmView.sln
 
 ![image-20241214023126978](pic/demodrag.gif)
 
+![image-20241214023126978](pic/demoAABB.gif)
+
 ## applicability
 
 Suitable for chain robot arms

@@ -20,6 +20,8 @@ struct ObjectStructure {
     const glm::vec3 silver = glm::vec3(0.8, 0.8, 0.8);
 
     bool modelDefined = false;
+    bool AABB = false;
+
     std::string path;
     std::string name;
     glm::vec3 modelColor = glm::vec3(0.5f, 0.5f, 0.5f);

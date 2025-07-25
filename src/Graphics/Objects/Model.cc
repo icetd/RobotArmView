@@ -5,7 +5,10 @@
 Model::Model(ObjectStructure *object) :
     modelObj(object)
 {
+    xMin = yMin = zMin = std::numeric_limits<float>::max();
+    xMax = yMax = zMax = -std::numeric_limits<float>::max();
     loadModel(modelObj->path);
+    meshesAABB.push_back(createAABB());
 }
 
 Model::~Model()
@@ -15,12 +18,18 @@ Model::~Model()
     for (int i = 0; i < meshes.size(); i++) {
         delete meshes[i];
     }
+
+    delete meshesAABB[0];
 }
 
 void Model::Draw(Shader &shader, GLenum mode)
 {
     for (int i = 0; i < meshes.size(); i++) {
         meshes[i]->DrawTriangle(shader, mode);
+    }
+
+    if (modelObj->AABB == true) {
+        meshesAABB[0]->DrawTriangle(shader, GL_LINE);
     }
 }
 
@@ -67,6 +76,13 @@ Renderer *Model::processMesh(aiMesh *mesh, const aiScene *scene)
         vector.z = mesh->mVertices[i].z;
         vertex.position = vector;
 
+        xMin = t1.minValue(vector.x, xMin);
+        xMax = t1.maxValue(vector.x, xMax);
+        yMin = t1.minValue(vector.y, yMin);
+        yMax = t1.maxValue(vector.y, yMax);
+        zMin = t1.minValue(vector.z, zMin);
+        zMax = t1.maxValue(vector.z, zMax);
+
         // normals
         if (mesh->HasNormals()) {
             vector.x = mesh->mNormals[i].x;
@@ -104,6 +120,13 @@ Renderer *Model::processMesh(aiMesh *mesh, const aiScene *scene)
         vertices.push_back(vertex);
     }
 
+    aabbVertices.push_back(xMin);
+    aabbVertices.push_back(xMax);
+    aabbVertices.push_back(yMin);
+    aabbVertices.push_back(yMax);
+    aabbVertices.push_back(zMin);
+    aabbVertices.push_back(zMax);
+
     for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; j++) {
@@ -127,6 +150,79 @@ Renderer *Model::processMesh(aiMesh *mesh, const aiScene *scene)
     textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
     return new Renderer(vertices, indices, textures);
+}
+
+
+Renderer* Model::createAABB()
+{       
+    std::vector<Vertex> colliderVertices;
+    std::vector<GLuint> colliderIndices
+    {
+        // front
+        0, 1, 2,
+        2, 3, 0,
+        // right
+        1, 5, 6,
+        6, 2, 1,
+        // back
+        7, 6, 5,
+        5, 4, 7,
+        // left
+        4, 0, 3,
+        3, 7, 4,
+        // bottom
+        4, 5, 1,
+        1, 0, 4,
+        // top
+        3, 2, 6,
+        6, 7, 3,
+    };
+    std::vector<Texture> colliderTextures;
+
+    Vertex colliderVertex;
+    glm::vec3 colliderVector;
+    
+    colliderVertex.position = glm::vec3(aabbVertices[0], aabbVertices[2], aabbVertices[5]);;
+    colliderVertex.color = glm::vec3(0.0f, 1.0f, 0.0f);
+    colliderVertex.normal = glm::vec3(colliderVertex.position);
+    colliderVertices.push_back(colliderVertex);
+
+    colliderVertex.position = glm::vec3(aabbVertices[1], aabbVertices[2], aabbVertices[5]);
+    colliderVertex.color = glm::vec3(0.0f, 1.0f, 0.0f);
+    colliderVertex.normal = glm::vec3(colliderVertex.position);
+    colliderVertices.push_back(colliderVertex);
+
+    colliderVertex.position = glm::vec3(aabbVertices[1], aabbVertices[3], aabbVertices[5]);
+    colliderVertex.color = glm::vec3(0.0f, 1.0f, 0.0f);
+    colliderVertex.normal = glm::vec3(colliderVertex.position);
+    colliderVertices.push_back(colliderVertex);
+
+    colliderVertex.position = glm::vec3(aabbVertices[0], aabbVertices[3], aabbVertices[5]);
+    colliderVertex.color = glm::vec3(0.0f, 1.0f, 0.0f);
+    colliderVertex.normal = glm::vec3(colliderVertex.position);
+    colliderVertices.push_back(colliderVertex);
+
+    colliderVertex.position = glm::vec3(aabbVertices[0], aabbVertices[2], aabbVertices[4]);
+    colliderVertex.color = glm::vec3(0.0f, 1.0f, 0.0f);
+    colliderVertex.normal = glm::vec3(colliderVertex.position);
+    colliderVertices.push_back(colliderVertex);
+
+    colliderVertex.position = glm::vec3(aabbVertices[1], aabbVertices[2], aabbVertices[4]);
+    colliderVertex.color = glm::vec3(0.0f, 1.0f, 0.0f);
+    colliderVertex.normal = glm::vec3(colliderVertex.position);
+    colliderVertices.push_back(colliderVertex);
+
+    colliderVertex.position = glm::vec3(aabbVertices[1], aabbVertices[3], aabbVertices[4]);
+    colliderVertex.color = glm::vec3(0.0f, 1.0f, 0.0f);
+    colliderVertex.normal = glm::vec3(colliderVertex.position);
+    colliderVertices.push_back(colliderVertex);
+
+    colliderVertex.position = glm::vec3(aabbVertices[0], aabbVertices[3], aabbVertices[4]);
+    colliderVertex.color = glm::vec3(0.0f, 1.0f, 0.0f);
+    colliderVertex.normal = glm::vec3(colliderVertex.position);
+    colliderVertices.push_back(colliderVertex);
+
+    return new Renderer(colliderVertices, colliderIndices, colliderTextures);
 }
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)

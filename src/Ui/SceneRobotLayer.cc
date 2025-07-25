@@ -54,6 +54,8 @@ void SceneRobotLayer::OnAttach()
     showAxis = false;
     showGrid = true;
     showProjectionLines = true;
+    isOpenCollisionDetection = false;
+    showAABB = false;
 }
 
 void SceneRobotLayer::OnUpdate(float ts)
@@ -65,7 +67,15 @@ void SceneRobotLayer::OnUpdate(float ts)
 
     m_frameBuffer->Bind();
 
+    for (uint32_t i = 0; i < m_robot->getJointObjects().size(); i++) {
+        if (showAABB) 
+            m_robot->getJointObjects()[i]->AABB = true;
+        else    
+            m_robot->getJointObjects()[i]->AABB = false;
+    }
+
     m_senceRobot->UpdateStatus(*m_ColorLightShader, *m_camera);
+    
     if (showGrid)
         m_senceRobot->DrawGrid(*m_ColorShader, *m_camera);
     if (showAxis)
@@ -128,8 +138,22 @@ void SceneRobotLayer::ShowModelSence()
             if (m_kinematics->computeIK(targetPose, q_seed, q_result)) {
                 for (int i = 0; i < q_result.rows(); ++i)
                     m_robot->getJointObjects()[i + 1]->setAngle(q_result(i) * rad2deg);
-                m_lastIkSuccessMatrix = m_endEffectorMatrix;
-                LOG(INFO, "IK from ImGuizmo success");
+
+                if (isOpenCollisionDetection) {
+                    // 更新模型姿态，确保碰撞检测基于最新关节角
+                    m_robot->updateJointAngles(*m_ColorLightShader, *m_camera);
+
+                    if (m_robot->getSelfCollisionStatus()) {
+                        LOG(WARN, "Self-collision detected after IK!");
+                        m_endEffectorMatrix = m_lastIkSuccessMatrix;
+                    } else {
+                        m_lastIkSuccessMatrix = m_endEffectorMatrix;
+                        LOG(INFO, "IK from ImGuizmo success (no self-collision)");
+                    }
+                } else {
+                    m_lastIkSuccessMatrix = m_endEffectorMatrix;
+                }
+
             } else {
                 m_endEffectorMatrix = m_lastIkSuccessMatrix;
                 LOG(WARN, "IK from ImGuizmo failed");
@@ -384,11 +408,14 @@ void SceneRobotLayer::ShowModelLoad()
         }
     }
 
+    if (isIkDragMode)
+        ImGui::Checkbox("isOpenCollisionDetection", &isOpenCollisionDetection);
     ImGui::Checkbox("Show Grid", &showGrid);
     ImGui::SameLine();
     ImGui::Checkbox("Show Axis", &showAxis);
     ImGui::SameLine();
     ImGui::Checkbox("Show ProjectionLines", &showProjectionLines);
+    ImGui::Checkbox("Show AABB", &showAABB);
 
     ImGui::Separator();
     ImGui::End();

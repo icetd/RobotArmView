@@ -17,7 +17,7 @@
 
 int main(int argc, char **argv)
 {
-    initLogger(ERRO);
+    initLogger(WARN);
     Application *app = new Application("RobotView", 1920, 1080);
     app->PushLayer<MainLayer>();
     app->PushLayer<SceneRobotLayer>();
