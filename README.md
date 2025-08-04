@@ -12,13 +12,7 @@ then open the RobotArmView.sln
 
 ## Demo
 
-![image-20241214023126978](pic/demoik.gif)
-
-![image-20241214023126978](pic/demo2ik.gif)
-
-![image-20241214023126978](pic/demodrag.gif)
-
-![image-20241214023126978](pic/demoAABB.gif)
+![image-20241214023126978](pic/demo.gif)
 
 ## applicability
 

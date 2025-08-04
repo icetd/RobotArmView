@@ -2,17 +2,19 @@
 project(RobotArmView)
 
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/source-charset:utf-8>")
+add_definitions(-w)
+
+set (CMKAE_CXX_STANDARD 17)
+set (CMAKE_BUILD_TYPE Release)
+set (CMAKE_INCLUDE_CURRENT_DIR ON)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 add_subdirectory(thirdparty/glfw)
 add_subdirectory(thirdparty/glm)
 add_subdirectory(thirdparty/assimp)
 add_subdirectory(thirdparty/bullet3)
+add_subdirectory(thirdparty/ruckig)
 
-add_definitions(-w)
-
-set (CMKAE_CXX_STANDARD 14)
-set (CMAKE_BUILD_TYPE Release)
-set (CMAKE_INCLUDE_CURRENT_DIR ON)
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set (SOURCE_DIR  "${CMAKE_CURRENT_LIST_DIR}/src") 
 set (INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/src")
@@ -32,6 +34,7 @@ set (URDF_PARSER_SRC    "${CMAKE_CURRENT_LIST_DIR}/thirdparty/urdf_parser/src")
 set (NLOPT_INC          "${CMAKE_CURRENT_LIST_DIR}/thirdparty/nlopt/include")
 set (NLOPT_LIB          "${CMAKE_CURRENT_LIST_DIR}/thirdparty/nlopt/lib")
 set (BULLET3_INC        "${CMAKE_CURRENT_LIST_DIR}/thirdparty/bullet3/src")
+set (RUCKIG_INC         "${CMAKE_CURRENT_LIST_DIR}/thirdparty/ruckig/include")
 
 set (VLD_INCLUDE_DIR    "${CMAKE_SOURCE_DIR}/thirdparty/VLD/include")
 set (VLD_LIB_DIR        "${CMAKE_SOURCE_DIR}/thirdparty/VLD/lib")
@@ -63,6 +66,7 @@ include_directories(
     ${URDF_PARSER_INC}
     ${NLOPT_INC}
     ${BULLET3_INC}
+    ${RUCKIG_INC}
     ${VLD_INCLUDE_DIR}
 ) 
 
@@ -117,9 +121,11 @@ list(APPEND EXTRA_LIBS
     BulletCollision
     BulletDynamics
     LinearMath
+    ruckig
 )
 
 add_executable(${PROJECT_NAME} ${SRC_FILES} ${INC_FILES} ${RES_FILES})
+
 
 # Add the target includes for MY_PROJECT 
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIR})

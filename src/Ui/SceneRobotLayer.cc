@@ -47,15 +47,46 @@ void SceneRobotLayer::OnAttach()
     KDL::Frame eeFrame;
     if (m_kinematics->computeFK(q, eeFrame)) {
         m_endEffectorMatrix = toGlmMatrix(eeFrame);
+        m_lastIkSuccessMatrix = m_endEffectorMatrix;
     }
 
-    isIkSiledrMode = false;
+    // ruckigController
+    int dof = m_robot->getJointObjects().size() - 1;
+    double controlCycle = 0.01; // 10ms 控制周期
+
+    m_ruckigController = std::make_unique<RuckigController>(dof, controlCycle);
+
+    // 用于获取机械臂角度
+    m_ruckigController->SetGetStateFunction([this](std::vector<double> &pos, std::vector<double> &vel) {
+        pos.clear();
+        vel.clear();
+        for (int i = 1; i < m_robot->getJointObjects().size(); ++i) {
+            pos.push_back(m_robot->getJointObjects()[i]->getAngle() * deg2rad);
+            vel.push_back(0.0);
+        }
+    });
+
+    // 实时控制 (可以用于控制实际机械臂)
+    m_ruckigController->SetSendCommandFunction([this](const std::vector<double> &pos) {
+        for (int i = 0; i < pos.size(); ++i) {
+            m_robot->getJointObjects()[i + 1]->setAngle(pos[i] * rad2deg);
+        }
+    });
+
+    m_ruckigController->start();
+
+    std::vector<double> maxVel(dof, 1.0);  // 1 rad/s
+    std::vector<double> maxAcc(dof, 2.0);  // 2 rad/s^
+    std::vector<double> maxJerk(dof, 5.0); // 5 rad/s^3
+    m_ruckigController->SetLimits(maxVel, maxAcc, maxJerk);
+
     isIkDragMode = false;
     showAxis = false;
     showGrid = true;
     showProjectionLines = true;
     isOpenCollisionDetection = false;
     showAABB = false;
+    m_wasUsingGizmo = false;
 }
 
 void SceneRobotLayer::OnUpdate(float ts)
@@ -68,14 +99,14 @@ void SceneRobotLayer::OnUpdate(float ts)
     m_frameBuffer->Bind();
 
     for (uint32_t i = 0; i < m_robot->getJointObjects().size(); i++) {
-        if (showAABB) 
+        if (showAABB)
             m_robot->getJointObjects()[i]->AABB = true;
-        else    
+        else
             m_robot->getJointObjects()[i]->AABB = false;
     }
 
     m_senceRobot->UpdateStatus(*m_ColorLightShader, *m_camera);
-    
+
     if (showGrid)
         m_senceRobot->DrawGrid(*m_ColorShader, *m_camera);
     if (showAxis)
@@ -119,7 +150,6 @@ void SceneRobotLayer::ShowModelSence()
         ImGui::Image((ImTextureID)m_frameBuffer->GetFrameTexture(), ImGui::GetContentRegionAvail(), ImVec2(0, 1), ImVec2(1, 0));
 
         if (isIkDragMode) {
-            // ImGuizmo 控制末端
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
             ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
@@ -128,38 +158,40 @@ void SceneRobotLayer::ShowModelSence()
                                  ImGuizmo::OPERATION::TRANSLATE | ImGuizmo::OPERATION::ROTATE,
                                  ImGuizmo::MODE::LOCAL, glm::value_ptr(m_endEffectorMatrix));
 
-            // 拖动后求IK
-            KDL::Frame targetPose = fromGlmMatrix(m_endEffectorMatrix);
-            KDL::JntArray q_seed(m_kinematics->getDOF());
-            for (int i = 0; i < q_seed.rows(); ++i)
-                q_seed(i) = 0.0;
+            if (m_wasUsingGizmo && !ImGuizmo::IsUsing()) {
+                // 拖动结束时，进行 IK + Ruckig 处理
+                KDL::Frame targetPose = fromGlmMatrix(m_endEffectorMatrix);
+                KDL::JntArray q_seed(m_kinematics->getDOF());
+                for (int i = 0; i < q_seed.rows(); ++i)
+                    q_seed(i) = 0.0;
 
-            KDL::JntArray q_result;
-            if (m_kinematics->computeIK(targetPose, q_seed, q_result)) {
-                for (int i = 0; i < q_result.rows(); ++i)
-                    m_robot->getJointObjects()[i + 1]->setAngle(q_result(i) * rad2deg);
-
-                if (isOpenCollisionDetection) {
-                    // 更新模型姿态，确保碰撞检测基于最新关节角
-                    m_robot->updateJointAngles(*m_ColorLightShader, *m_camera);
-
-                    if (m_robot->getSelfCollisionStatus()) {
-                        LOG(WARN, "Self-collision detected after IK!");
-                        m_endEffectorMatrix = m_lastIkSuccessMatrix;
+                KDL::JntArray q_result;
+                if (m_kinematics->computeIK(targetPose, q_seed, q_result)) {
+                    if (isOpenCollisionDetection) {
+                        if (simulateJointAnglesForCollisionCheck(q_result)) {
+                            LOG(WARN, "Self-collision detected after IK!");
+                            m_endEffectorMatrix = m_lastIkSuccessMatrix;
+                        } else {
+                            m_lastIkSuccessMatrix = m_endEffectorMatrix;
+                            LOG(INFO, "IK success, no collision");
+                        }
                     } else {
                         m_lastIkSuccessMatrix = m_endEffectorMatrix;
-                        LOG(INFO, "IK from ImGuizmo success (no self-collision)");
                     }
                 } else {
-                    m_lastIkSuccessMatrix = m_endEffectorMatrix;
+                    m_endEffectorMatrix = m_lastIkSuccessMatrix;
                 }
-
-            } else {
-                m_endEffectorMatrix = m_lastIkSuccessMatrix;
-                LOG(WARN, "IK from ImGuizmo failed");
             }
+
+            // 记录当前是否在使用 Gizmo（用于判断状态变更）
+            m_wasUsingGizmo = ImGuizmo::IsUsing();
+        } else {
+            // 如果没开启拖动，重置状态记录
+            m_wasUsingGizmo = false;
         }
     }
+
+    
     ImGui::EndChild();
     ImGui::End();
 }
@@ -229,6 +261,7 @@ void SceneRobotLayer::ShowModelLoad()
             KDL::Frame eeFrame;
             if (m_kinematics->computeFK(q, eeFrame)) {
                 m_endEffectorMatrix = toGlmMatrix(eeFrame);
+                m_lastIkSuccessMatrix = m_endEffectorMatrix;
             }
         }
     }
@@ -351,9 +384,30 @@ void SceneRobotLayer::ShowModelLoad()
     ImGui::SliderFloat("Pitch (deg)", &targetPitch, -180, 180);
     ImGui::SliderFloat("Yaw (deg)", &targetYaw, -180, 180);
 
+    ImGui::Separator();
+    ImGui::Text("trajectory planning");
+
+    static float vel = 1.0f;
+    static float acc = 2.0f;
+    static float jerk = 5.0f;
+
+    bool updated = false;
+    updated |= ImGui::SliderFloat(u8"MaxVel (rad/s)", &vel, 0.0f, 20.0f);
+    updated |= ImGui::SliderFloat(u8"MaxAcc (rad/s²)", &acc, 0.0f, 20.0f);
+    updated |= ImGui::SliderFloat(u8"MaxJerk (rad/s³)", &jerk, 0.0f, 50.0f);
+
+    if (updated) {
+        int dof = m_kinematics->getDOF();
+        std::vector<double> maxVel(dof, vel);
+        std::vector<double> maxAcc(dof, acc);
+        std::vector<double> maxJerk(dof, jerk);
+        m_ruckigController->SetLimits(maxVel, maxAcc, maxJerk);
+    }
+
+
     static bool ik_success;
 
-    if (ImGui::Button("Solve IK") || isIkSiledrMode) {
+    if (ImGui::Button("Solve IK")) {
         if (!m_kinematics->isValid()) {
             LOG(ERRO, "KDLKinematics not initialized");
         } else {
@@ -368,9 +422,11 @@ void SceneRobotLayer::ShowModelLoad()
 
             KDL::JntArray q_result;
             if (m_kinematics->computeIK(targetPose, q_seed, q_result)) {
+                std::vector<double> target;
                 for (int i = 0; i < dof; ++i) {
-                    m_robot->getJointObjects()[i + 1]->setAngle(q_result(i) * rad2deg);
+                    target.push_back(q_result(i));
                 }
+                m_ruckigController->SetTarget(target);
 
                 // 再通过 FK 求出当前末端姿态
                 KDL::Frame currentPose;
@@ -391,22 +447,13 @@ void SceneRobotLayer::ShowModelLoad()
             }
         }
     }
+
     ImGui::SameLine();
     (ik_success) ? ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "success") : ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "failed");
 
-    if (ImGui::Checkbox("IkSilderMode", &isIkSiledrMode)) {
-        if (isIkSiledrMode) {
-            isIkDragMode = false;
-        }
-    }
-
     ImGui::SameLine();
 
-    if (ImGui::Checkbox("IkDragMode", &isIkDragMode)) {
-        if (isIkDragMode) {
-            isIkSiledrMode = false;
-        }
-    }
+    ImGui::Checkbox("IkDragMode", &isIkDragMode);
 
     if (isIkDragMode)
         ImGui::Checkbox("isOpenCollisionDetection", &isOpenCollisionDetection);
@@ -416,6 +463,18 @@ void SceneRobotLayer::ShowModelLoad()
     ImGui::SameLine();
     ImGui::Checkbox("Show ProjectionLines", &showProjectionLines);
     ImGui::Checkbox("Show AABB", &showAABB);
+    
+    if (m_ruckigController->IsFinished()) {
+        ImGui::TextColored(ImVec4(0, 1, 0, 1), "Ruckig motion finished");
+    } else {
+        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ruckig running...");
+    }
+
+    if (!m_collision) {
+        ImGui::TextColored(ImVec4(0, 1, 0, 1), "No-collision detected after IK!");
+    } else {
+        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Self-collision detected after IK!");
+    }
 
     ImGui::Separator();
     ImGui::End();
@@ -454,4 +513,29 @@ KDL::Frame SceneRobotLayer::fromGlmMatrix(const glm::mat4 &mat)
     KDL::Vector p(mat[3][0], mat[3][1], mat[3][2]); // 平移向量
 
     return KDL::Frame(R, p);
+}
+
+bool SceneRobotLayer::simulateJointAnglesForCollisionCheck(const KDL::JntArray &q)
+{
+    // 保存当前状态
+    std::vector<float> backup;
+    for (int i = 1; i < m_robot->getJointObjects().size(); ++i)
+        backup.push_back(m_robot->getJointObjects()[i]->getAngle());
+
+    // 应用模拟角度
+    for (int i = 0; i < q.rows(); ++i)
+        m_robot->getJointObjects()[i + 1]->setAngle(q(i) * rad2deg);
+
+    m_robot->updateJointAngles(*m_ColorLightShader, *m_camera);
+
+    // 碰撞检测
+    m_collision = m_robot->getSelfCollisionStatus();
+
+    // 恢复原状态
+    for (int i = 1; i < m_robot->getJointObjects().size(); ++i)
+        m_robot->getJointObjects()[i]->setAngle(backup[i - 1]);
+
+    m_robot->updateJointAngles(*m_ColorLightShader, *m_camera);
+
+    return m_collision;
 }

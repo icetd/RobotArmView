@@ -10,6 +10,7 @@
 #include "../Graphics/Renderer/Shader.h"
 #include "Kinematics/KDLKinematics.h"
 #include "Kinematics/kdl_parser.h"
+#include "Kinematics/RuckigController.h"
 
 class SceneRobotLayer : public Layer
 {
@@ -52,10 +53,8 @@ private:
 
     std::unique_ptr<KDLKinematics> m_kinematics;
     // IK 控制目标
-    bool isIkSiledrMode;
     float targetX = 0, targetY = 0, targetZ = 0;
     float targetRoll = 0, targetPitch = 0, targetYaw = 0;
-
 
     bool isIkDragMode;
     glm::mat4 m_endEffectorMatrix; // ImGuizmo 矩阵缓存
@@ -63,8 +62,14 @@ private:
     glm::mat4 SceneRobotLayer::toGlmMatrix(const KDL::Frame &frame);
     KDL::Frame SceneRobotLayer::fromGlmMatrix(const glm::mat4 &mat);
 
+    bool m_collision;
     bool isOpenCollisionDetection;
     bool showAABB;
+    bool simulateJointAnglesForCollisionCheck(const KDL::JntArray &q);
+
+    std::unique_ptr<RuckigController> m_ruckigController;
+    bool m_wasUsingGizmo;
+    std::vector<glm::vec3> m_eeTrajectory;  // 末端轨迹
 };
 
 #endif
