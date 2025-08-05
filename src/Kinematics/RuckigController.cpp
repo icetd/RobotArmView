@@ -80,15 +80,8 @@ void RuckigController::run()
             for (int i = 0; i < m_dof; ++i) {
                 newPos[i] = m_output->new_position[i];
             }
-
             m_sendCommand(newPos);
-
-            for (int i = 0; i < m_dof; ++i) {
-                m_input->current_position[i] = m_output->new_position[i];
-                m_input->current_velocity[i] = m_output->new_velocity[i];
-                m_input->current_acceleration[i] = m_output->new_acceleration[i];
-            }
-
+            m_output->pass_to_input(*m_input);
             if (result == ruckig::Result::Finished) {
                 m_active = false;
             }
