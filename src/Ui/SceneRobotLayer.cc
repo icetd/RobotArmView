@@ -118,7 +118,7 @@ void SceneRobotLayer::OnUpdate(float ts)
 
     ShowModelSence();
     ShowModelLoad();
-    m_frameBuffer->Unbind();
+    ShowController();
 }
 
 void SceneRobotLayer::OnDetach()
@@ -191,7 +191,6 @@ void SceneRobotLayer::ShowModelSence()
         }
     }
 
-    
     ImGui::EndChild();
     ImGui::End();
 }
@@ -199,6 +198,8 @@ void SceneRobotLayer::ShowModelSence()
 void SceneRobotLayer::ShowModelLoad()
 {
     ImGui::Begin(u8"模型加载");
+    ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.3f);
+    ImGui::AlignTextToFramePadding();
     ImVec2 contentSize = ImGui::GetContentRegionAvail();
     const float buttonWidth = contentSize.x;
     if (ImGui::Button(u8"add urdf", ImVec2(buttonWidth, 25))) {
@@ -266,7 +267,6 @@ void SceneRobotLayer::ShowModelLoad()
         }
     }
 
-    ImGui::Separator();
     ImGui::Text("%s", m_robot->getName().c_str());
     static int selected = 0;
     for (int i = 0; i < m_robot->getJointObjects().size(); i++) {
@@ -284,8 +284,20 @@ void SceneRobotLayer::ShowModelLoad()
         }
     }
 
-    ImGui::NewLine();
     ImGui::Separator();
+    ImGui::PopItemWidth();
+    ImGui::End();
+}
+
+void SceneRobotLayer::ShowController()
+{
+    ImGui::Begin(u8"机械臂控制");
+    ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.3f);
+    ImGui::AlignTextToFramePadding();
+    ImVec2 contentSize = ImGui::GetContentRegionAvail();
+    const float buttonWidth = contentSize.x;
+
+    ImGui::SeparatorText("Joint Status");
     for (int i = 1; i < m_robot->getJointObjects().size(); ++i) {
         ObjectStructure *jointObject = m_robot->getJointObjects()[i];
 
@@ -320,7 +332,7 @@ void SceneRobotLayer::ShowModelLoad()
         }
     }
 
-    if (ImGui::Button("Reset All Joints")) {
+    if (ImGui::Button("Reset All Joints", ImVec2(buttonWidth / 2, 25))) {
         for (int i = 1; i < m_robot->getJointObjects().size(); ++i) {
             ObjectStructure *jointObject = m_robot->getJointObjects()[i];
             if (jointObject->joint_type == ObjectStructure::JointType::REVOLUTE) {
@@ -330,7 +342,8 @@ void SceneRobotLayer::ShowModelLoad()
         }
     }
 
-    if (ImGui::Button("Solve FK")) {
+    ImGui::SameLine();
+    if (ImGui::Button("Solve FK", ImVec2(buttonWidth / 2, 25))) {
         KDL::JntArray q(m_kinematics->getDOF());
         for (int i = 0; i < q.rows(); i++)
             q(i) = m_robot->getJointObjects()[i + 1]->getAngle() * deg2rad;
@@ -374,8 +387,7 @@ void SceneRobotLayer::ShowModelLoad()
             rx * rad2deg, ry * rad2deg, rz * rad2deg);
     }
 
-    ImGui::Separator();
-    ImGui::Text("IK Target Pose");
+    ImGui::SeparatorText("IK Target Pose");
 
     ImGui::SliderFloat("Target X (mm)", &targetX, -2000, 2000);
     ImGui::SliderFloat("Target Y (mm)", &targetY, -2000, 2000);
@@ -384,8 +396,7 @@ void SceneRobotLayer::ShowModelLoad()
     ImGui::SliderFloat("Pitch (deg)", &targetPitch, -180, 180);
     ImGui::SliderFloat("Yaw (deg)", &targetYaw, -180, 180);
 
-    ImGui::Separator();
-    ImGui::Text("trajectory planning");
+    ImGui::SeparatorText("Trajectory Planning");
 
     static float vel = 1.0f;
     static float acc = 2.0f;
@@ -404,10 +415,12 @@ void SceneRobotLayer::ShowModelLoad()
         m_ruckigController->SetLimits(maxVel, maxAcc, maxJerk);
     }
 
+    ImGui::SeparatorText("Control");
 
     static bool ik_success;
 
-    if (ImGui::Button("Solve IK")) {
+    // === Solve IK 按钮 + 状态 ===
+    if (ImGui::Button("Solve IK", ImVec2(buttonWidth, 25))) {
         if (!m_kinematics->isValid()) {
             LOG(ERRO, "KDLKinematics not initialized");
         } else {
@@ -428,7 +441,6 @@ void SceneRobotLayer::ShowModelLoad()
                 }
                 m_ruckigController->SetTarget(target);
 
-                // 再通过 FK 求出当前末端姿态
                 KDL::Frame currentPose;
                 if (m_kinematics->computeFK(q_result, currentPose)) {
                     double rx, ry, rz;
@@ -448,35 +460,55 @@ void SceneRobotLayer::ShowModelLoad()
         }
     }
 
-    ImGui::SameLine();
-    (ik_success) ? ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "success") : ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "failed");
+    ImGui::Columns(2, nullptr, false); // 两列，无边线
+    // === Checkbox 区块 ===
+    ImGui::Checkbox("Ik Drag Mode", &isIkDragMode);
+    ImGui::NextColumn();
+    if (isIkDragMode) {
+        ImGui::Checkbox("Enable Collision Detection", &isOpenCollisionDetection);
+    } else {
+        ImGui::Text(""); // 占位对齐
+    }
+    ImGui::NextColumn();
 
-    ImGui::SameLine();
-
-    ImGui::Checkbox("IkDragMode", &isIkDragMode);
-
-    if (isIkDragMode)
-        ImGui::Checkbox("isOpenCollisionDetection", &isOpenCollisionDetection);
     ImGui::Checkbox("Show Grid", &showGrid);
-    ImGui::SameLine();
+    ImGui::NextColumn();
     ImGui::Checkbox("Show Axis", &showAxis);
-    ImGui::SameLine();
-    ImGui::Checkbox("Show ProjectionLines", &showProjectionLines);
-    ImGui::Checkbox("Show AABB", &showAABB);
-    
-    if (m_ruckigController->IsFinished()) {
-        ImGui::TextColored(ImVec4(0, 1, 0, 1), "Ruckig motion finished");
-    } else {
-        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ruckig running...");
-    }
+    ImGui::NextColumn();
 
-    if (!m_collision) {
-        ImGui::TextColored(ImVec4(0, 1, 0, 1), "No-collision detected after IK!");
+    ImGui::Checkbox("Show Projection Lines", &showProjectionLines);
+    ImGui::NextColumn();
+    ImGui::Checkbox("Show AABB", &showAABB);
+    ImGui::NextColumn();
+
+    // === 状态信息 ===
+
+    ImGui::Text("Ik Status:");
+    ImGui::NextColumn();
+    (ik_success) ? ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "IK success") : ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "IK failed");
+    ImGui::NextColumn();
+
+    ImGui::Text("Ruckig:");
+    ImGui::NextColumn();
+    if (m_ruckigController->IsFinished()) {
+        ImGui::TextColored(ImVec4(0, 1, 0, 1), "Finished");
     } else {
-        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Self-collision detected after IK!");
+        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Running...");
     }
+    ImGui::NextColumn();
+
+    ImGui::Text("Collision:");
+    ImGui::NextColumn();
+    if (!m_collision) {
+        ImGui::TextColored(ImVec4(0, 1, 0, 1), "No collision");
+    } else {
+        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Self-collision!");
+    }
+    ImGui::NextColumn();
+    ImGui::Columns(1); // 关闭列模式
 
     ImGui::Separator();
+    ImGui::PopItemWidth();
     ImGui::End();
 }
 

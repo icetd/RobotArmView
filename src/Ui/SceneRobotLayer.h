@@ -46,6 +46,7 @@ private:
 
     void ShowModelSence();
     void ShowModelLoad();
+    void ShowController();
     void convertPath(char *path);
 
     const double deg2rad = 0.017453292519943295769236907684886127; // PI/180
@@ -69,7 +70,6 @@ private:
 
     std::unique_ptr<RuckigController> m_ruckigController;
     bool m_wasUsingGizmo;
-    std::vector<glm::vec3> m_eeTrajectory;  // 末端轨迹
 };
 
 #endif

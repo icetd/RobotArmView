@@ -21,7 +21,6 @@ int main(int argc, char **argv)
     Application *app = new Application("RobotView", 1920, 1080);
     app->PushLayer<MainLayer>();
     app->PushLayer<SceneRobotLayer>();
-    app->PushLayer<LogLayer>();
     app->Run();
 
     delete app;
