@@ -57,12 +57,16 @@ void RuckigController::SetTarget(const std::vector<double> &targetPosition)
 
 void RuckigController::SetGetStateFunction(std::function<void(std::vector<double> &, std::vector<double> &)> getter)
 {
-    m_getState = getter;
+    m_getState = std::move(getter);
 }
 
 void RuckigController::SetSendCommandFunction(std::function<void(const std::vector<double> &)> sender)
 {
-    m_sendCommand = sender;
+    m_sendCommand = std::move(sender);
+}
+
+void RuckigController::SetDoneCallback(std::function<void()> cb) {
+    m_doneCallback = std::move(cb);
 }
 
 void RuckigController::run()

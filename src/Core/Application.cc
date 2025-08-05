@@ -7,7 +7,7 @@
 #include <imgui_internal.h>
 #include <glm/glm.hpp>
 #include "Application.h"
-#include "../Utils/StyleManager.h"
+#include "Utils/StyleManager.h"
 #include "log.h"
 
 static Application *Instance = nullptr;

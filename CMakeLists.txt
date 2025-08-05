@@ -4,7 +4,7 @@ project(RobotArmView)
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/source-charset:utf-8>")
 add_definitions(-w)
 
-set (CMKAE_CXX_STANDARD 17)
+set (CMKAE_CXX_STANDARD 14)
 set (CMAKE_BUILD_TYPE Release)
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -13,6 +13,7 @@ add_subdirectory(thirdparty/glfw)
 add_subdirectory(thirdparty/glm)
 add_subdirectory(thirdparty/assimp)
 add_subdirectory(thirdparty/bullet3)
+add_subdirectory(thirdparty/nlopt)
 add_subdirectory(thirdparty/ruckig)
 
 
@@ -32,7 +33,6 @@ set (IMPLOT_SRC         "${CMAKE_CURRENT_LIST_DIR}/thirdparty/implot")
 set (URDF_PARSER_INC    "${CMAKE_CURRENT_LIST_DIR}/thirdparty/urdf_parser/include")
 set (URDF_PARSER_SRC    "${CMAKE_CURRENT_LIST_DIR}/thirdparty/urdf_parser/src")
 set (NLOPT_INC          "${CMAKE_CURRENT_LIST_DIR}/thirdparty/nlopt/include")
-set (NLOPT_LIB          "${CMAKE_CURRENT_LIST_DIR}/thirdparty/nlopt/lib")
 set (BULLET3_INC        "${CMAKE_CURRENT_LIST_DIR}/thirdparty/bullet3/src")
 set (RUCKIG_INC         "${CMAKE_CURRENT_LIST_DIR}/thirdparty/ruckig/include")
 
@@ -45,7 +45,6 @@ set(KDL_SRC_DIR "${CMAKE_SOURCE_DIR}/thirdparty/orocos_kdl/src")
 
 link_directories(
     ${VLD_LIB_DIR}
-    ${NLOPT_LIB}
 )
 
 include_directories(
@@ -139,5 +138,3 @@ SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/output)
 
 file(COPY ${CMAKE_SOURCE_DIR}/res DESTINATION ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})
 file(COPY ${CMAKE_SOURCE_DIR}/configs DESTINATION ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})
-file (GLOB FFMPEG_COPY_DLL "${CMAKE_SOURCE_DIR}/thirdparty/nlopt/lib/*.dll")
-file(COPY ${FFMPEG_COPY_DLL} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})

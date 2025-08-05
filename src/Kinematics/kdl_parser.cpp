@@ -5,7 +5,7 @@
 #include <vector>
 #include "frames_io.hpp"
 #include "urdf_parser/urdf_parser.h"
-#include "core/log.h"
+#include "Core/log.h"
 
 namespace kdl_parser
 {

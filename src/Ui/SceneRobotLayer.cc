@@ -1,6 +1,6 @@
 #include "SceneRobotLayer.h"
 #include "../Core/Application.h"
-#include "../Core/Log.h"
+#include "../Core/log.h"
 #include <set>
 #include <windows.h>
 #include <regex>
@@ -56,7 +56,7 @@ void SceneRobotLayer::OnAttach()
 
     m_ruckigController = std::make_unique<RuckigController>(dof, controlCycle);
 
-    // 用于获取机械臂角度
+    // 用于获取机械臂角度 (控制真实机械臂需要获取 start move 时的状态)
     m_ruckigController->SetGetStateFunction([this](std::vector<double> &pos, std::vector<double> &vel) {
         pos.clear();
         vel.clear();

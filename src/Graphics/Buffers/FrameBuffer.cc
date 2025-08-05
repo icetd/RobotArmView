@@ -1,5 +1,5 @@
 #include "FrameBuffer.h"
-#include "../../Core/log.h"
+#include "Core/log.h"
 #include <iostream>
 #include <glad/glad.h>
 #include <glm/glm.hpp>

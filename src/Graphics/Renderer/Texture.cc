@@ -1,4 +1,4 @@
-#include "../../Graphics/renderer/Texture.h"
+#include "../../Graphics/Renderer/Texture.h"
 #include "../../Core/log.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>

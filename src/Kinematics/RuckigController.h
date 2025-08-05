@@ -17,6 +17,7 @@ public:
 
     void SetGetStateFunction(std::function<void(std::vector<double> &pos, std::vector<double> &vel)> getter);
     void SetSendCommandFunction(std::function<void(const std::vector<double> &pos)> sender);
+    void SetDoneCallback(std::function<void()> cb);
 
     void run() override;
 
@@ -35,6 +36,7 @@ private:
 
     std::function<void(std::vector<double> &pos, std::vector<double> &vel)> m_getState;
     std::function<void(const std::vector<double> &pos)> m_sendCommand;
+    std::function<void()> m_doneCallback;
 };
 
 #endif

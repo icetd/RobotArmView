@@ -2,9 +2,9 @@
 #define APPLICATION_H
 
 #include "Layer.h"
-#include "../Graphics/Renderer/Camera.h"
-#include "../Graphics/Buffers/FrameBuffer.h"
-#include "../Utils/INIReader.h"
+#include "Graphics/Renderer/Camera.h"
+#include "Graphics/Buffers/FrameBuffer.h"
+#include "Utils/INIReader.h"
 #include <string>
 #include <memory>
 #include <vector>
