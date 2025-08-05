@@ -51,7 +51,7 @@ void SceneRobotLayer::OnAttach()
     }
 
     // ruckigController
-    int dof = m_robot->getJointObjects().size() - 1;
+    size_t dof = m_robot->getJointObjects().size() - 1;
     double controlCycle = 0.01; // 10ms 控制周期
 
     m_ruckigController = std::make_unique<RuckigController>(dof, controlCycle);

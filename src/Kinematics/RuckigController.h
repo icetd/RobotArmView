@@ -9,7 +9,8 @@
 class RuckigController : public MThread
 {
 public:
-    RuckigController(int dof, double controlCycle);
+    RuckigController(size_t dof, double controlCycle);
+    RuckigController(size_t dof, double controlCycle, size_t max_number_of_waypoints);
 
     void SetTarget(const std::vector<double> &targePosition);
     void SetLimits(const std::vector<double> &maxVel, const std::vector<double> &maxAcc, const std::vector<double> &maxJerk);
@@ -22,12 +23,13 @@ public:
     bool IsFinished() const;
 
 private:
-    int m_dof;
+    size_t m_dof;
+    size_t m_max_number_of_waypoints;
     double m_dt;
 
-    ruckig::InputParameter<6> m_input;
-    ruckig::OutputParameter<6> m_output;
-    ruckig::Ruckig<6> m_otg;
+    std::unique_ptr<ruckig::InputParameter<ruckig::DynamicDOFs>> m_input;
+    std::unique_ptr<ruckig::OutputParameter<ruckig::DynamicDOFs>> m_output;
+    std::unique_ptr<ruckig::Ruckig<ruckig::DynamicDOFs>> m_otg;
 
     bool m_active = false;
 
