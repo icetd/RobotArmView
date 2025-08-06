@@ -17,6 +17,7 @@ MThread::~MThread()
 
 void MThread::start()
 {
+    this->stopState = false;
     std::thread thr(&MThread::run, this);
     this->th = std::move(thr);
 }
