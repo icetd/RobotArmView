@@ -71,9 +71,6 @@ void RuckigController::SetDoneCallback(std::function<void()> cb) {
 
 void RuckigController::run() // It is best to use timer control
 {
-    auto control_interval = std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(m_dt));
-    auto next_time = std::chrono::steady_clock::now();
-
     while (!this->isStoped()) {
         if (m_active && m_sendCommand) {
             auto result = m_otg->update(*m_input, *m_output);
@@ -97,9 +94,7 @@ void RuckigController::run() // It is best to use timer control
                 }
             }
         }
-
-        next_time += control_interval;
-        std::this_thread::sleep_until(next_time);
+        this->sleep(m_dt);
     }
 }
 

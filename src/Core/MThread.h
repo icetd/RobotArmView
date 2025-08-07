@@ -17,8 +17,8 @@ public:
     void detach();
     void stop();
     void join();
-    void sleep(int sec);
-    void sleepMs(int msec);
+    void sleep(double sec);
+    void sleepMs(double msec);
     bool isStoped();
 
     virtual void run() = 0;
