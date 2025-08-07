@@ -69,8 +69,11 @@ void RuckigController::SetDoneCallback(std::function<void()> cb) {
     m_doneCallback = std::move(cb);
 }
 
-void RuckigController::run()
+void RuckigController::run() // It is best to use timer control
 {
+    auto control_interval = std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(m_dt));
+    auto next_time = std::chrono::steady_clock::now();
+
     while (!this->isStoped()) {
         if (m_active && m_sendCommand) {
             auto result = m_otg->update(*m_input, *m_output);
@@ -81,18 +84,22 @@ void RuckigController::run()
             }
 
             std::vector<double> newPos(m_dof);
-            for (int i = 0; i < m_dof; ++i) {
+            for (int i = 0; i < m_dof; ++i)
                 newPos[i] = m_output->new_position[i];
-            }
+
             m_sendCommand(newPos);
             m_output->pass_to_input(*m_input);
+
             if (result == ruckig::Result::Finished) {
                 m_active = false;
+                if (m_doneCallback) {
+                    m_doneCallback();
+                }
             }
         }
 
-        // 控制周期 sleep
-        std::this_thread::sleep_for(std::chrono::duration<double>(m_dt));
+        next_time += control_interval;
+        std::this_thread::sleep_until(next_time);
     }
 }
 
