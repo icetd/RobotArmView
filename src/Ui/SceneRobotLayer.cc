@@ -37,7 +37,7 @@ void SceneRobotLayer::OnAttach()
     std::string urdfPath = "res/robot/dummy_robot/urdf/dummy_ros_sim.urdf";
     KDL::Tree tree;
     if (kdl_parser::treeFromFile(urdfPath, tree)) {
-        m_kinematics = std::make_unique<KDLKinematics>(tree, m_robot->getJointObjects()[0]->name, m_robot->getJointObjects()[m_robot->getJointObjects().size() - 1]->name);
+        m_kinematics = std::make_unique<KDLKinematics>(tree, m_robot->getJointObjects()[0]->name, m_robot->getJointObjects()[m_robot->getJointObjects().size() - 1]->name, urdfPath);
     }
 
     KDL::JntArray q(m_kinematics->getDOF());
@@ -252,7 +252,7 @@ void SceneRobotLayer::ShowModelLoad()
             KDL::Tree tree;
 
             if (kdl_parser::treeFromFile(urdfPath, tree)) {
-                m_kinematics = std::make_unique<KDLKinematics>(tree, m_robot->getJointObjects()[0]->name, m_robot->getJointObjects()[m_robot->getJointObjects().size() - 1]->name);
+                m_kinematics = std::make_unique<KDLKinematics>(tree, m_robot->getJointObjects()[0]->name, m_robot->getJointObjects()[m_robot->getJointObjects().size() - 1]->name, urdfPath);
             }
 
             KDL::JntArray q(m_kinematics->getDOF());

@@ -25,7 +25,8 @@ public:
 
     KDLKinematics(const KDL::Tree &robot_tree,
                   const std::string &base_link,
-                  const std::string &tip_link);
+                  const std::string &tip_link,
+                  std::string &urdf_path);
 
     bool isValid() const;
 
